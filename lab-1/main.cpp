@@ -11,6 +11,7 @@
 #include "Shader.h"
 #include "Mesh.h"
 #include "Renderer.h"
+#include "Entity.h"
 
 using Callback = std::function<void()>;
 
@@ -22,14 +23,6 @@ struct glStatusData {
 	const char* shaderName;
 	/// \n Log messages attributed to the current shader.
 	char infoLog[GL_INFO_LOG_LENGTH];
-};
-
-struct Entity {
-public:
-	Entity(const std::vector<glm::vec3>& vertices, const std::vector<unsigned int>& indices, const glm::vec4& color) : 
-		mesh(vertices, indices), renderer(color) {};
-	Mesh mesh;
-	Renderer renderer;
 };
 
 // Variable declaration
@@ -86,13 +79,13 @@ static void InitRenderingSystem() {
 
 void display(Entity& entity){
 	glEnable(GL_DEPTH_TEST);
-	auto vpMatrix = glm::mat4(1);
+	auto vpMatrix = glm::mat4(1.0f);
 
 	auto* activeShader = shader;
 	glBindVertexArray(VAO);
 	activeShader->Apply(vpMatrix);
 
-	auto model = glm::mat4(1);
+	auto model = glm::mat4(1.0f);
 	activeShader->setMatrix("mvp", activeShader->CalculateMVPMatrix(model));
 	auto renderer = &entity.renderer;
 	if (renderer)
@@ -150,15 +143,13 @@ static void init()
 {
 	// Create 3 vertices that make up a triangle that fits on the viewport 
 	std::vector<glm::vec3> vertices = {
-		glm::vec3(- 1.0f, -1.0f, 0.0f),
-		glm::vec3(1.0f, -1.0f, 0.0f),
-		glm::vec3(0.0f, 1.0f, 0.0f),
-		glm::vec3(2.0f, 1.0f, 0.0f)
+		glm::vec3(- 0.1f, -0.1f, 0.0f),
+		glm::vec3(0.1f, -0.1f, 0.0f),
+		glm::vec3(0.0f, 0.1f, 0.0f)
 	};
 
 	std::vector<unsigned int> indices = {
-		0, 1, 2,
-		1, 3, 2
+		0, 2, 1
 	};
 
 	// Create a color array that identfies the colors of each vertex (format R, G, B, A)
@@ -168,24 +159,52 @@ static void init()
 		glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
 	};
 
-	Entity e = Entity(vertices, indices, colors[0]);
-	entities.emplace_back(e);
+	Entity e1 = Entity(vertices, indices, colors);
+	entities.emplace_back(e1);
+
+	// Create 3 vertices that make up a triangle that fits on the viewport 
+	std::vector<glm::vec3> vertices2 = {
+		glm::vec3(0.1f, -0.1f, 0.0f),
+		glm::vec3(0.0f, 0.1f, 0.0f),
+		glm::vec3(0.2f, 0.1f, 0.0f)
+	};
+
+	std::vector<unsigned int> indices2 = {
+		0, 1, 2
+	};
+
+	// Create a color array that identfies the colors of each vertex (format R, G, B, A)
+	std::vector<glm::vec4> colors2 = {
+		glm::vec4(1.0f),
+		glm::vec4(1.0f),
+		glm::vec4(1.0f)
+	};
+
+	Entity e2 = Entity(vertices2, indices2, colors2);
+	e2.renderer.SetColor(glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	entities.emplace_back(e2);
 }
 
 int main(){
-	std::cout << "Hello World!";
+	std::cout << "Hello World!" << std::endl;
 	
 	// create window
 	InitGLFW();
 	CreateWindow("Hello Triangle!");
 	LoadGlad();
 
+	std::cout << "Initialized OpenGL." << std::endl;
+
 	// Set up your objects and shaders
 	update = new Event();
 	InitRenderingSystem();
 	init();
 
+	std::cout << "Initialized Program." << std::endl;
+
 	update->addListener([&]() {for (Entity& entity : entities) { display(entity); }});
+
+	std::cout << "Starting Rendering Loop." << std::endl;
 
 	// Begin infinite event loop
 	run([&]() {update->invoke();});

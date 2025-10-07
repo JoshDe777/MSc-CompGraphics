@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="Events.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="mesh.h" />

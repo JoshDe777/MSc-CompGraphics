@@ -5,9 +5,11 @@
 
 using Color = glm::vec4;
 
+struct Entity;
+
 class Renderer {
 public:
-	Renderer(const Color& color);
+	Renderer(Entity* entity, Color color);
 
     /// \n Applies rendering data to the active shader before drawing meshes.
     virtual void ApplyData(Shader& shader);
@@ -19,4 +21,5 @@ public:
 
 private:
     Color m_color;
+    Entity* entity = nullptr;
 };

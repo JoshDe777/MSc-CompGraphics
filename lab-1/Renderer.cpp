@@ -1,5 +1,10 @@
 #include "Renderer.h"
+#include "Entity.h"
 
-Renderer::Renderer(const Color& color) : m_color(color) {}
+Renderer::Renderer(Entity* entity, Color color) : 
+	entity(entity),
+	m_color(color) {}
 
-void Renderer::ApplyData(Shader& shader) { shader.setVector("color", m_color); }
+void Renderer::ApplyData(Shader& shader) { 
+	shader.setVector("color", m_color);
+}

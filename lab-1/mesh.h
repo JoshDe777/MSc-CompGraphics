@@ -3,12 +3,16 @@
 #include <vector>
 #include "glm.hpp"
 
+struct Entity;
+
 struct Mesh {
 public:
-	Mesh(const std::vector<glm::vec3>& vertices, const std::vector<unsigned int>& indices) : 
-		vertices(vertices),
-		indices(indices),
-		indexCount(static_cast<int>(indices.size())) {};
+	Mesh(
+		Entity* entity,
+		const std::vector<glm::vec3>& vertices,
+		const std::vector<unsigned int>& indices,
+		const std::vector<glm::vec4>& colors
+	);
 
 	/// \n Draws the mesh onto the screen once per frame.
 	void draw();
@@ -23,4 +27,6 @@ private:
 	unsigned int VBO = 0;
 	/// \n Element Buffer Object -> stores index data to avoid reusing coordinates in triangles.
 	unsigned int EBO = 0;
+
+	Entity* entity = nullptr;
 };
