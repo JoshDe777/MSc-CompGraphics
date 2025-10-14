@@ -1,0 +1,334 @@
+{
+	"inputs" : 
+	[
+		{
+			"path" : "CMakeLists.txt"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/CMakeFiles/3.27.0/CMakeSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-Initialize.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/CMakeFiles/3.27.0/CMakeCCompiler.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/CMakeFiles/3.27.0/CMakeCXXCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeGenericSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/WindowsPaths.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeCInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/Compiler/MSVC-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/Compiler/MSVC.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-MSVC-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-MSVC.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "cmake-build-debug/CMakeFiles/3.27.0/CMakeRCCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeRCInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeCXXInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/Compiler/MSVC-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/Compiler/MSVC.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-MSVC-CXX.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-MSVC.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"path" : "extern/glad/CMakeLists.txt"
+		},
+		{
+			"path" : "extern/glfw/CMakeLists.txt"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/GNUInstallDirs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeDependentOption.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/FindThreads.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CheckLibraryExists.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CheckIncludeFile.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CheckCSourceCompiles.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/Internal/CheckSourceCompiles.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/FindDoxygen.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakePackageConfigHelpers.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/WriteBasicConfigVersionFile.cmake"
+		},
+		{
+			"path" : "extern/glfw/src/glfw3Config.cmake.in"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/BasicConfigVersion-SameMajorVersion.cmake.in"
+		},
+		{
+			"path" : "extern/glfw/src/glfw_config.h.in"
+		},
+		{
+			"path" : "extern/glfw/src/glfw3.pc.in"
+		},
+		{
+			"path" : "extern/glfw/cmake_uninstall.cmake.in"
+		},
+		{
+			"path" : "extern/glfw/src/CMakeLists.txt"
+		},
+		{
+			"path" : "extern/glfw/examples/CMakeLists.txt"
+		},
+		{
+			"path" : "extern/glfw/tests/CMakeLists.txt"
+		},
+		{
+			"path" : "extern/glfw/docs/CMakeLists.txt"
+		},
+		{
+			"path" : "extern/glfw/docs/Doxyfile.in"
+		},
+		{
+			"path" : "extern/glm/CMakeLists.txt"
+		},
+		{
+			"path" : "extern/glm/glm/CMakeLists.txt"
+		},
+		{
+			"path" : "extern/box2d/CMakeLists.txt"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/GNUInstallDirs.cmake"
+		},
+		{
+			"path" : "extern/box2d/src/CMakeLists.txt"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakePackageConfigHelpers.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/WriteBasicConfigVersionFile.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/Program Files/JetBrains/CLion 2023.3/bin/cmake/win/x64/share/cmake-3.27/Modules/BasicConfigVersion-SameMajorVersion.cmake.in"
+		},
+		{
+			"path" : "extern/box2d/unit-test/CMakeLists.txt"
+		},
+		{
+			"path" : "extern/tinygltf/CMakeLists.txt"
+		},
+		{
+			"path" : "extern/soloud/CMakeLists.txt"
+		},
+		{
+			"path" : "extern/soloud/contrib/Configure.cmake"
+		},
+		{
+			"path" : "extern/soloud/contrib/cmake/OptionDependentOnPackage.cmake"
+		},
+		{
+			"path" : "extern/soloud/contrib/cmake/PrintOptionStatus.cmake"
+		},
+		{
+			"path" : "extern/soloud/src/CMakeLists.txt"
+		},
+		{
+			"path" : "extern/soloud/contrib/src.cmake"
+		},
+		{
+			"path" : "extern/soloud/contrib/cmake/Install.cmake"
+		},
+		{
+			"path" : "extern/stb/CMakeLists.txt"
+		},
+		{
+			"path" : "extern/fastnoise/CMakeLists.txt"
+		},
+		{
+			"path" : "engine/CMakeLists.txt"
+		},
+		{
+			"path" : "app/CMakeLists.txt"
+		}
+	],
+	"kind" : "cmakeFiles",
+	"paths" : 
+	{
+		"build" : "C:/repositories/uni/MSc-CompGraphics/project/cmake-build-debug",
+		"source" : "C:/repositories/uni/MSc-CompGraphics/project"
+	},
+	"version" : 
+	{
+		"major" : 1,
+		"minor" : 0
+	}
+}
