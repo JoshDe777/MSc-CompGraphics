@@ -2,6 +2,7 @@
 
 #include "EisEngine.h"
 
-void run(){
-    DEBUG_LOG("Hello World!")
-}
+class MinotaursMaze : public Game {
+public:
+    explicit MinotaursMaze();
+};
