@@ -74,6 +74,11 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
+  include("C:/repositories/uni/MSc-CompGraphics/project/cmake-build-debug/extern/assimp/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
   include("C:/repositories/uni/MSc-CompGraphics/project/cmake-build-debug/engine/cmake_install.cmake")
 endif()
 

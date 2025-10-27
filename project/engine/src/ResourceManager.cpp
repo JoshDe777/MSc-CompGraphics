@@ -1,4 +1,4 @@
-#include "stb_image.h"
+#include <stb_image.h>
 
 #include "engine/ResourceManager.h"
 #include "engine/utilities/Debug.h"
@@ -6,6 +6,10 @@
 namespace EisEngine {
     std::map<std::string, std::unique_ptr<Texture2D>> ResourceManager::Textures = {};
     std::map<std::string, std::unique_ptr<Shader>> ResourceManager::Shaders = {};
+
+    void ResourceManager::Load3DObject(const fs::path &path) {
+
+    }
 
     Texture2D* ResourceManager::GenerateTextureFromFile( const fs::path &imagePath, const std::string &textureName) {
         if(Textures[textureName] == nullptr)

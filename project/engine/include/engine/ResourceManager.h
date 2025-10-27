@@ -32,11 +32,14 @@ namespace EisEngine {
     class ResourceManager {
         friend class Game;
     public:
+        /// \n Loads a 3D-object (any extension supported by assimp) as a mesh + renderer combination.
+        /// @param imagePath - fs::path: the absolute path from the assets folder to the desired file.
+        static void Load3DObject(const fs::path& path);
+
         /// \n Generates a texture from the given file.
         /// @param imagePath - fs::path: the absolute path from the assets folder to the desired file.
-        /// @param alpha - bool: Determines whether the texture has an alpha channel or not
-        /// \n (e.g. x.png = true, x.jpg = false)
         /// @param textureName - std::string: the name of the given texture. Must be unique!
+        /// @returns Texture2D*: A pointer to a Texture2D object created from the provided image.
         static Texture2D* GenerateTextureFromFile(const fs::path& imagePath, const std::string& textureName);
 
         /// \n fetches a texture using its name.

@@ -26,6 +26,15 @@ CMake Deprecation Warning at extern/glm/CMakeLists.txt:2 (cmake_policy):
 [-] XAudio2 backend disabled
 [+] WINMM backend enabled
 [-] WASAPI backend disabled
--- Configuring done (0.2s)
--- Generating done (0.3s)
+-- Shared libraries disabled
+-- compiling zlib from sources
+-- VRML disabled
+-- tinyusdz disabled
+-- Enabled importer formats: AMF 3DS AC ASE ASSBIN B3D BVH COLLADA DXF CSM HMP IRRMESH IQM IRR LWO LWS MD2 MD3 MD5 MDC MDL NFF NDO OFF OBJ OGRE OPENGEX PLY MS3D COB BLEND IFC XGL FBX Q3D Q3BSP RAW SIB SMD STL TERRAGEN 3D X X3D GLTF 3MF MMD
+-- Disabled importer formats: USD
+-- Enabled exporter formats: OBJ OPENGEX PLY 3DS ASSBIN ASSXML COLLADA FBX STL X X3D GLTF 3MF PBRT ASSJSON STEP
+-- Disabled exporter formats:
+-- Treating all warnings as errors (for assimp library only)
+-- Configuring done (1.7s)
+-- Generating done (0.6s)
 -- Build files have been written to: C:/repositories/uni/MSc-CompGraphics/project/cmake-build-debug
