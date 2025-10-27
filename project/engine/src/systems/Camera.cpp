@@ -3,9 +3,12 @@
 #include "engine/Game.h"
 
 namespace EisEngine::systems {
-    Camera::Camera(EisEngine::Game &engine, const Vector2& screenDimensions): System(engine),
-    m_screenWidth((int) screenDimensions.x), m_screenHeight((int) screenDimensions.y),
-    aspectRatio(screenDimensions.x / screenDimensions.y) {
+    Camera::Camera(EisEngine::Game &engine, const Vector2& screenDimensions):
+    System(engine),
+    m_screenWidth((int) screenDimensions.x),
+    m_screenHeight((int) screenDimensions.y),
+    aspectRatio(screenDimensions.x / screenDimensions.y)
+    {
         entity = &engine.entityManager.createEntity("Camera");
         transform = entity->transform;
         engine.onUpdate.addListener([&] (Game &game){

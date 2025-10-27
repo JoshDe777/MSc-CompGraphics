@@ -17,6 +17,8 @@ namespace EisEngine {
         explicit Vector2(const float& x = 0, const float& y = 0) : x(x), y(y) {}
         /// \n Creates a 2-dimensional vector from an existing b2Vec2.
         explicit Vector2(b2Vec2 const &v): x(v.x), y(v.y){}
+        /// \n Creates a 2-dimensional vector from an existing glm::vec2
+        explicit Vector2(glm::vec2 const &v) : x(v.x), y(v.y) {}
         /// \n Creates a 2-dimensional vector from an existing Vector2.
         Vector2(Vector2 const &v) = default;
 
