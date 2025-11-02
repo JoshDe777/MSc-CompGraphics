@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
-#include <glm/glm.hpp>
-#include <OpenGL/OpenGlInclude.h>
+#include "glm/glm.hpp"
+#include "OpenGL/OpenGlInclude.h"
 #include "engine/ecs/Component.h"
 
 namespace EisEngine::components{

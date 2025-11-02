@@ -20,6 +20,8 @@ namespace EisEngine {
         explicit Vector3(const b2Vec2 &v) : x(v.x), y(v.y), z(0) {}
         /// \n Creates a 3-dimensional vector from an existing glm vec3.
         explicit Vector3(const glm::vec3 &v):x(v.x), y(v.y), z(v.z) {}
+        /// \n Creates a 3-dimensional vector using a float distributed to all three dimensions.
+        explicit Vector3(float& f) : x(f), y(f), z(f) {}
 
         /// \n The x-value of this vector (right/left in local space).
         float x;
