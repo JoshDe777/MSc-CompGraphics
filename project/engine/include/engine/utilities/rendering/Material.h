@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine/utilities/Vector3.h"
+#include "engine/utilities/Color.h"
 
 namespace EisEngine {
     using Vector3 = EisEngine::Vector3;
@@ -42,11 +43,12 @@ namespace EisEngine {
         #pragma endregion
 
         #pragma region setters
-        const void SetDiffuse(const Vector3& val) {diffuse = val;}
-        const void SetEmission(const Vector3& val) {emission = val;}
-        const void SetOpacity(const float& val) {opacity = val;}
-        const void SetMetallic(const float& val) {metallic = val;}
-        const void SetRoughness(const float& val) {roughness = val;}
+        void SetDiffuse(const Vector3& val) {diffuse = val;}
+        void SetDiffuse(const Color& val) {diffuse = Vector3(val.r, val.g, val.b);}
+        void SetEmission(const Vector3& val) {emission = val;}
+        void SetOpacity(const float& val) {opacity = val;}
+        void SetMetallic(const float& val) {metallic = val;}
+        void SetRoughness(const float& val) {roughness = val;}
         #pragma endregion
     private:
         Vector3 diffuse;

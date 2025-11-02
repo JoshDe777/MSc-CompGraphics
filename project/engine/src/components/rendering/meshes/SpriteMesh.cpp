@@ -1,6 +1,6 @@
 #include <utility>
 
-#include "engine/components/rendering/meshes/SpriteMesh.h"
+#include "engine/components/meshes/SpriteMesh.h"
 #include "engine/ecs/Entity.h"
 
 namespace EisEngine::components {

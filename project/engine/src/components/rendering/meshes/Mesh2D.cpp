@@ -1,4 +1,4 @@
-#include "engine/components/rendering/meshes/Mesh2D.h"
+#include "engine/components/meshes/Mesh2D.h"
 #include "engine/ecs/Entity.h"
 
 namespace EisEngine::components {

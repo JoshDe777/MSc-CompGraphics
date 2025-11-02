@@ -21,6 +21,10 @@ namespace EisEngine::components {
     // applies the selected color to the active shader.
     void Renderer::ApplyData(Shader& shader) {
         material->ApplyTextureDataToShader(shader);
+
+        if(!texture)
+            return;
+
         Shader::ApplyTexture(*texture);
     }
 }

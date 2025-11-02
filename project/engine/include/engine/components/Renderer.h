@@ -34,7 +34,10 @@ namespace EisEngine {
             /// \n Sets a new texture for the corresponding sprite.
             void SetNewTexture(Texture2D* newTexture) {texture = newTexture;}
             /// \n Returns a pointer to the texture assigned to a renderer.
-            [[nodiscard]] Texture2D* GetTexture() { return texture;}
+            Texture2D* GetTexture() { return texture;}
+
+            /// \n Returns a pointer to the material assigned to a renderer.
+            Material* GetMaterial() { return material;}
         protected:
             /// \n the texture attributed to the associated mesh.
             Texture2D* texture;

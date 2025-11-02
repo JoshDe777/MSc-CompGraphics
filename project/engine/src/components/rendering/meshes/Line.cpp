@@ -1,4 +1,4 @@
-#include "engine/components/rendering/meshes/Line.h"
+#include "engine/components/meshes/Line.h"
 #include "engine/ecs/Entity.h"
 
 namespace EisEngine::components {

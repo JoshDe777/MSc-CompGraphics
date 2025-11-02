@@ -50,7 +50,7 @@ namespace EisEngine::systems {
             engine.componentManager.forEachComponent<Mesh2D>([&](Mesh2D& mesh){
                 auto model = mesh.entity()->transform->GetModelMatrix();
                 activeShader->setMatrix("mvp", activeShader->CalculateMVPMatrix(model));
-                auto renderer = mesh.entity()->GetComponent<Mesh2DRenderer>();
+                auto renderer = mesh.entity()->GetComponent<Renderer>();
                 if(renderer)
                     renderer->ApplyData(*activeShader);
                 mesh.draw();
@@ -61,7 +61,7 @@ namespace EisEngine::systems {
         if(engine.componentManager.hasComponentOfType<Line>()){
             glBindVertexArray(VAO[1]);
             engine.componentManager.forEachComponent<Line>([&] (Line& mesh){
-                auto renderer = mesh.entity()->GetComponent<LineRenderer>();
+                auto renderer = mesh.entity()->GetComponent<Renderer>();
                 if(renderer)
                     renderer->ApplyData(*activeShader);
                 auto model = mesh.entity()->transform->GetModelMatrix();
@@ -81,7 +81,7 @@ namespace EisEngine::systems {
             glBindVertexArray(VAO[2]);
             activeShader->Apply(vpMatrix);
             engine.componentManager.forEachComponent<SpriteMesh>([&] (SpriteMesh& mesh){
-                auto renderer = mesh.entity()->GetComponent<SpriteRenderer>();
+                auto renderer = mesh.entity()->GetComponent<Renderer>();
                 if(!renderer){
                     DEBUG_ERROR("No sprite renderer attached to mesh on entity " + mesh.entity()->name())
                     return;
@@ -112,7 +112,7 @@ namespace EisEngine::systems {
         glBindVertexArray(VAO[3]);
         activeShader->Apply(vpMatrix);
         for (auto mesh : uiSprites) {
-            auto renderer = mesh->entity()->GetComponent<SpriteRenderer>();
+            auto renderer = mesh->entity()->GetComponent<Renderer>();
             renderer->ApplyData(*activeShader);
             auto screenWidth = camera->GetWidth();
             auto screenHeight = camera->GetHeight();
