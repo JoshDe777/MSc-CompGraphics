@@ -27,4 +27,10 @@ namespace EisEngine::components {
 
         Shader::ApplyTexture(*texture);
     }
+
+    void Renderer::Invalidate() {
+        delete material;
+        material = nullptr;
+        Component::Invalidate();
+    }
 }

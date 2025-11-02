@@ -14,6 +14,7 @@
 #include "engine/utilities/Bounds2D.h"
 
 #include "engine/utilities/rendering/PrimitiveMesh2D.h"
+#include "engine/utilities/rendering/PrimitiveMesh3D.h"
 #include "engine/utilities/rendering/PrimitiveSpriteMesh.h"
 #include "engine/utilities/rendering/Texture2D.h"
 
@@ -23,6 +24,7 @@ using Color = EisEngine::Color;
 using DebugLine = EisEngine::DebugLine;
 using Bounds2D = EisEngine::Bounds2D;
 using PrimitiveMesh2D = EisEngine::rendering::PrimitiveMesh2D;
+using PrimitiveMesh3D = EisEngine::rendering::PrimitiveMesh3D;
 using PrimitiveSpriteMesh = EisEngine::rendering::PrimitiveSpriteMesh;
 using Texture2D = EisEngine::Texture2D;
 

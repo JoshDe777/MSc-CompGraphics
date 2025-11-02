@@ -9,7 +9,7 @@ namespace EisEngine::components{
     using Component = ecs::Component;
 
     /// \n A line between two points.
-    /// \n It is recommended to add a LineRenderer component for colors.
+    /// \n It is recommended to add a Renderer component for colors.
     class Line : public Component {
     public:
         /// \n Creates a line between two points in the given color.

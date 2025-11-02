@@ -9,7 +9,7 @@ namespace EisEngine {
 
     namespace components {
         /// \n A mesh displaying a sprite.
-        /// \n Requires a SpriteRenderer component for proper use, unlocking the use of colors and textures.
+        /// \n Requires a Renderer component for proper use, unlocking the use of materials and textures.
         class SpriteMesh : public Component {
         public:
             /// \n Creates a new sprite mesh.

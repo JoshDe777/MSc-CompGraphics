@@ -7,7 +7,7 @@ namespace EisEngine {
     using namespace ecs;
     namespace components {
         /// \n This component represents an entity's shape in the game world.
-        /// \n It is recommended to define a Mesh2DRenderer to provide a color to fragments.
+        /// \n It is recommended to define a Renderer to provide a color to fragments.
         class Mesh2D : public Component {
         public:
             /// \n Creates a 2D Mesh component.

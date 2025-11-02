@@ -16,7 +16,8 @@ namespace EisEngine {
         class Renderer : public Component {
         public:
             /// \n Creates a renderer.
-            /// @param color - Color: A 4D vector representing a mesh's color in RGBA%.
+            /// @param tex - Texture2D*: A pointer to a texture item. Can be null.
+            /// @param mat - Material*: A pointer to a material item.
             /// @param layer - std::string: The rendering layer for meshes paired with a renderer.
             /// \n Currently supported: {"UI" for UI Elements, and [any other string] for regular rendering}.
             Renderer(Game &engine, guid_t owner,
@@ -39,6 +40,8 @@ namespace EisEngine {
             /// \n Returns a pointer to the material assigned to a renderer.
             Material* GetMaterial() { return material;}
         protected:
+            /// \n A function called when a component is intentionally deleted.
+            void Invalidate() override;
             /// \n the texture attributed to the associated mesh.
             Texture2D* texture;
             /// \n The material attributed to the associated mesh.

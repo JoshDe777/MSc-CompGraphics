@@ -19,14 +19,14 @@ namespace EisEngine {
             return result;
         }
 
-        PrimitiveMesh3D::PrimitiveMesh3D(const std::vector<Vector3> &primitiveVertices,
+        PrimitiveMesh3D::PrimitiveMesh3D(const std::vector<Vector3> &shapeVertices,
                                          const std::vector<unsigned int> &shapeIndices,
-                                         const std::vector<Vector3> &normals,
-                                         const std::vector<Vector2> &uvs) :
-                                         vertices(Vector3ToGlmVector(primitiveVertices)),
-                                         normals(Vector3ToGlmVector(normals)),
-                                         uvs(Vector2ToGlmVector(uvs)),
-                                         PrimitiveMesh(primitiveVertices, shapeIndices) {}
+                                         const std::vector<Vector3> &shapeNormals,
+                                         const std::vector<Vector2> &shapeUVs) :
+                                         vertices(Vector3ToGlmVector(shapeVertices)),
+                                         normals(Vector3ToGlmVector(shapeNormals)),
+                                         uvs(Vector2ToGlmVector(shapeUVs)),
+                                         PrimitiveMesh(shapeVertices, shapeIndices) {}
 
         std::vector<Vector3> PrimitiveMesh3D::GetVertices() const {
             std::vector<Vector3> result = {};
