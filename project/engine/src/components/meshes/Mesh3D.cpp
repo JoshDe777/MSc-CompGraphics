@@ -12,7 +12,30 @@ namespace EisEngine::components {
     }
 
     GLuint CreateVBO(const PrimitiveMesh3D& primitive){
-        // to do
+        // buffer initialization
+        unsigned int buffer = 0;
+        glGenBuffers(1, &buffer);
+        glBindBuffer(GL_ARRAY_BUFFER, buffer);
+
+        // data preparation
+        const auto& vertices = Vec3VectorToGlm(primitive.GetVertices());
+        auto vsize = vertices.size() * sizeof(glm::vec3);
+        const auto& normals = Vec3VectorToGlm(primitive.GetNormals());
+        auto nsize = normals.size() * sizeof(glm::vec3);
+        const auto& uvs = Vec2VectorToGlm(primitive.GetUVs());
+        auto uvsize = uvs.size() * sizeof(glm::vec2);
+        auto total_buffer_size = GLsizeiptr(vsize + nsize + uvsize);
+
+        // buffer population
+        glBufferData(GL_ARRAY_BUFFER, total_buffer_size, nullptr, GL_STATIC_DRAW);
+        int offset = 0;
+        glBufferSubData(GL_ARRAY_BUFFER, offset, vsize, vertices.data());
+        offset += vsize;
+        glBufferSubData(GL_ARRAY_BUFFER, offset, nsize, normals.data());
+        offset += nsize;
+        glBufferSubData(GL_ARRAY_BUFFER, offset, uvsize, uvs.data());
+
+        return buffer;
     }
 
     Mesh3D::Mesh3D(EisEngine::Game &engine, EisEngine::ecs::guid_t owner, const PrimitiveMesh3D &_primitive) :
@@ -36,7 +59,31 @@ namespace EisEngine::components {
         Component::Invalidate();
     }
 
-    void Mesh3D::draw() {
-        // to do
+    void Mesh3D::draw(const unsigned int& shaderProgram) {
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glEnableVertexAttribArray(shaderProgram);
+
+        // draw vertices
+        auto vpos = glGetAttribLocation(shaderProgram, "aPos");
+        glVertexAttribPointer(vpos, 3, GL_FLOAT, GL_FALSE,
+                              sizeof(glm::vec3), nullptr);
+        const auto& vertices = Vec3VectorToGlm(primitive.GetVertices());
+        auto vsize = vertices.size() * sizeof(glm::vec3);
+
+        // add normals
+        auto norm = glGetAttribLocation(shaderProgram, "normal");
+        glVertexAttribPointer(norm, 3, GL_FLOAT, GL_TRUE,
+                              sizeof(glm::vec3), (BUFFER_OFFSET(vsize)));
+        const auto& normals = Vec3VectorToGlm(primitive.GetNormals());
+        auto nsize = normals.size() * sizeof(glm::vec3);
+
+        // add uvs
+        auto uv = glGetAttribLocation(shaderProgram, "uv");
+        glVertexAttribPointer(uv, 2, GL_FLOAT, GL_FALSE,
+                              sizeof(glm::vec2), (BUFFER_OFFSET(vsize + nsize)));
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+        glDrawElements(GL_TRIANGLES, primitive.indexCount, GL_UNSIGNED_INT, nullptr);
     }
 }

@@ -17,7 +17,7 @@ namespace EisEngine {
             void Invalidate() override;
 
             /// \n Draws the mesh onto the screen once per frame.
-            void draw();
+            void draw(const unsigned int& shaderProgram);
             /// \n primitive mesh definition, stores vertex and edge data.
             const PrimitiveMesh3D primitive;
         private:

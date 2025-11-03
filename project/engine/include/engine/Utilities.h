@@ -124,4 +124,18 @@ namespace EisEngine{
 
         return result;
     }
+
+    inline std::vector<glm::vec3> Vec3VectorToGlm(const std::vector<Vector3>& v){
+        std::vector<glm::vec3> out = {};
+        for(auto i : v)
+            out.emplace_back(i.x, i.y, i.z);
+        return out;
+    }
+
+    inline std::vector<glm::vec2> Vec2VectorToGlm(const std::vector<Vector2>& v){
+        std::vector<glm::vec2> out = {};
+        for(auto i : v)
+            out.emplace_back(i.x, i.y);
+        return out;
+    }
 }
