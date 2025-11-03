@@ -73,14 +73,14 @@ namespace EisEngine::components {
         // add normals
         auto norm = glGetAttribLocation(shaderProgram, "normal");
         glVertexAttribPointer(norm, 3, GL_FLOAT, GL_TRUE,
-                              sizeof(glm::vec3), (BUFFER_OFFSET(vsize)));
+                              sizeof(glm::vec3), (GLvoid*)vsize);
         const auto& normals = Vec3VectorToGlm(primitive.GetNormals());
         auto nsize = normals.size() * sizeof(glm::vec3);
 
         // add uvs
         auto uv = glGetAttribLocation(shaderProgram, "uv");
         glVertexAttribPointer(uv, 2, GL_FLOAT, GL_FALSE,
-                              sizeof(glm::vec2), (BUFFER_OFFSET(vsize + nsize)));
+                              sizeof(glm::vec2), (GLvoid*)(vsize + nsize));
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
