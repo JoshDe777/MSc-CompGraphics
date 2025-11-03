@@ -115,4 +115,13 @@ namespace EisEngine{
     bool ListContains(const std::vector<T>& list, const T& item){
         return std::find(list.begin(), list.end(), item) != list.end();
     }
+
+    std::vector<Vector3> AiVector3DToVector3(std::vector<aiVector3D>& v){
+        std::vector<Vector3> result = {};
+
+        for(auto i : v)
+            result.emplace_back(i);
+
+        return result;
+    }
 }

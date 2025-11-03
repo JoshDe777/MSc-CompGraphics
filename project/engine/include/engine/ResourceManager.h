@@ -1,9 +1,13 @@
 #pragma once
 
-#include <filesystem>
-#include <map>
 #include "engine/utilities/rendering/Texture2D.h"
 #include "engine/utilities/rendering/Shader.h"
+#include "engine/utilities/rendering/Material.h"
+
+#include <filesystem>
+#include <map>
+#include <assimp/material.h>
+#include <assimp/scene.h>
 
 #define GET_STRING(x) #x
 #define GET_DIR(x) GET_STRING(x)
@@ -34,7 +38,7 @@ namespace EisEngine {
     public:
         /// \n Loads a 3D-object (any extension supported by assimp) as a mesh + renderer combination.
         /// @param imagePath - fs::path: the absolute path from the assets folder to the desired file.
-        static void Load3DObject(const fs::path& path);
+        static ecs::Entity* Load3DObject(Game& game, const fs::path& path);
 
         /// \n Generates a texture from the given file.
         /// @param imagePath - fs::path: the absolute path from the assets folder to the desired file.
@@ -66,16 +70,39 @@ namespace EisEngine {
         static std::map<std::string, std::unique_ptr<Texture2D>> Textures;
         /// \n A dictionary of shaders associated to their name.
         static std::map<std::string, std::unique_ptr<Shader>> Shaders;
+        /// \n A dictionary of materials associated to their name.
+        static std::map<std::string, std::unique_ptr<Material>> Materials;
 
         /// \n Compiles a file path to a std::string.
         static std::string ReadText(const fs::path& path);
+        /// \n Imports data from a given data node in an assimp scene.
+        /// \n Creates an entity per submesh, storing mesh, texture and material data in said entity.
+        /// Said entity is then attached to the parent entity.
+        /// @param game - Game&: A reference to the Engine system.
+        /// @param node - aiNode*: A pointer to the current node from which the data should be imported.
+        /// @param scene - aiScene*: A pointer to the overall scene graph the node is from.
+        /// @param parent - Entity*: A pointer to the parent object to this node.
+        static void ImportNode(Game& game, const aiNode* node,
+                               const aiScene* scene, const fs::path& modelPath, Entity* parent = nullptr);
 
+        #pragma region Textures
         /// \n loads a texture from a file.
         /// @param filePath - std::filesystem::path: The file path to the image.
         /// @param alpha - bool: Determines whether the texture has an alpha channel or not.
         static Texture2D loadTextureFromFile(const fs::path& filePath);
 
+        /// \n loads a texture from an assimp scene.
+        static Texture2D* ImportTextureFromAssimp(const aiMaterial* mat, const aiScene* scene);
+        #pragma endregion
+
+        #pragma region Materials
+        /// \n Loads a material from the provided assimp material object.
+        static Material* LoadMaterial(const aiMaterial* mat);
+        #pragma endregion
+
+        #pragma region Shaders
         /// \n Creates a shader program of the given shaderType with a definition at the given shader path.
         static unsigned int loadAndCompileShader(GLuint shaderType, const fs::path& filePath);
+        #pragma endregion
     };
 }

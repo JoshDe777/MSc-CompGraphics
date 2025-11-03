@@ -3,6 +3,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <box2d/box2d.h>
+#include <assimp/vector3.h>
 
 namespace EisEngine {
     class Vector3;
@@ -19,6 +20,8 @@ namespace EisEngine {
         explicit Vector2(b2Vec2 const &v): x(v.x), y(v.y){}
         /// \n Creates a 2-dimensional vector from an existing glm::vec2
         explicit Vector2(glm::vec2 const &v) : x(v.x), y(v.y) {}
+        /// \n Creates a 2-dimensional vector from an existing aiVector3D.
+        explicit Vector2(const aiVector3D& v) : x(v.x), y(v.y) {}
         /// \n Creates a 2-dimensional vector from an existing Vector2.
         Vector2(Vector2 const &v) = default;
 
