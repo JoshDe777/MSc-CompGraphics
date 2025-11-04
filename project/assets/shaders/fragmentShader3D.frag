@@ -2,12 +2,11 @@
 
 in vec2 TexCoords;
 
-uniform sampler2D image;
 uniform vec4 diffuse;
+uniform sampler2D image;
 
 out vec4 fragColor;
 
-void main()
-{
+void main() {
     fragColor = diffuse * texture(image, TexCoords);
 }

@@ -19,13 +19,39 @@ namespace EisEngine {
             return result;
         }
 
+        std::vector<glm::vec3> InitNormals(const std::vector<Vector3>* normals, const int& vCount){
+            std::vector<glm::vec3> result = {};
+            // if object has no normals, default to down.
+            if(!normals){
+                for(auto i = 0; i < vCount; i++)
+                    result.emplace_back(0, 0, -1);
+            }
+            else
+                result = Vector3ToGlmVector(*normals);
+
+            return result;
+        }
+
+        std::vector<glm::vec2> InitUVs(const std::vector<Vector2>* uvs, const int& vCount){
+            std::vector<glm::vec2> result = {};
+            // if object has no uvs, default to (0, 0)
+            if(!uvs){
+                for(auto i = 0; i < vCount; i++)
+                    result.emplace_back(0, 0);
+            }
+            else
+                result = Vector2ToGlmVector(*uvs);
+
+            return result;
+        }
+
         PrimitiveMesh3D::PrimitiveMesh3D(const std::vector<Vector3> &shapeVertices,
                                          const std::vector<unsigned int> &shapeIndices,
-                                         const std::vector<Vector3> &shapeNormals,
-                                         const std::vector<Vector2> &shapeUVs) :
+                                         const std::vector<Vector3>* shapeNormals,
+                                         const std::vector<Vector2>* shapeUVs) :
                                          vertices(Vector3ToGlmVector(shapeVertices)),
-                                         normals(Vector3ToGlmVector(shapeNormals)),
-                                         uvs(Vector2ToGlmVector(shapeUVs)),
+                                         normals(InitNormals(shapeNormals, (int) shapeVertices.size())),
+                                         uvs(InitUVs(shapeUVs, (int) shapeVertices.size())),
                                          PrimitiveMesh(shapeVertices, shapeIndices) {}
 
         std::vector<Vector3> PrimitiveMesh3D::GetVertices() const {

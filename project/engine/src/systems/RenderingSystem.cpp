@@ -27,13 +27,17 @@ namespace EisEngine::systems {
                                                  "shaders/fragmentShader.frag",
                                                  "Default Shader");
         // generate default sprite shader
-        ResourceManager::GenerateShaderFromFiles( "shaders/spriteVertexShader.vert",
+        ResourceManager::GenerateShaderFromFiles( "shaders/betterVertexShader.vert",
                                                   "shaders/spriteFragmentShader.frag",
                                                   "Sprite Shader");
         // generate ui sprite shader
-        ResourceManager::GenerateShaderFromFiles("shaders/uiVertexShader.vert",
+        ResourceManager::GenerateShaderFromFiles("shaders/betterVertexShader.vert",
                                                  "shaders/spriteFragmentShader.frag",
                                                  "UI Shader");
+        // generate 3D shader
+        ResourceManager::GenerateShaderFromFiles("shaders/betterVertexShader.vert",
+                                                 "shaders/fragmentShader3D.frag",
+                                                 "3D Shader");
     }
 
     void RenderingSystem::Draw() {
@@ -41,6 +45,7 @@ namespace EisEngine::systems {
         glEnable(GL_DEPTH_TEST);
         auto vpMatrix = camera->GetVPMatrix();
 
+        #pragma region Default Shader
         auto activeShader = ResourceManager::GetShader("Default Shader");
 
         // Mesh2D rendering
@@ -69,7 +74,17 @@ namespace EisEngine::systems {
                 mesh.draw();
             });
         }
+        #pragma endregion
 
+        #pragma region 3D rendering
+        // Mesh3D rendering
+        activeShader = ResourceManager::GetShader("3D Shader");
+        if(engine.componentManager.hasComponentOfType<Mesh3D>()){
+            // do something here
+        }
+        #pragma endregion
+
+        #pragma region Sprite Rendering
         activeShader = ResourceManager::GetShader("Sprite Shader");
 
         // Sprite rendering
@@ -122,5 +137,6 @@ namespace EisEngine::systems {
             activeShader->setMatrix("mvp", modelProjection);
             mesh->draw();
         }
+        #pragma endregion
     }
 }

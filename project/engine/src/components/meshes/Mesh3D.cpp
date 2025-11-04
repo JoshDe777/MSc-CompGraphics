@@ -68,19 +68,19 @@ namespace EisEngine::components {
         glVertexAttribPointer(vpos, 3, GL_FLOAT, GL_FALSE,
                               sizeof(glm::vec3), nullptr);
         const auto& vertices = Vec3VectorToGlm(primitive.GetVertices());
-        auto vsize = vertices.size() * sizeof(glm::vec3);
+        auto offset = vertices.size() * sizeof(glm::vec3);
 
-        // add normals
-        auto norm = glGetAttribLocation(shaderProgram, "normal");
+        // add normals - not yet used for now.
+        /*auto norm = glGetAttribLocation(shaderProgram, "normal");
         glVertexAttribPointer(norm, 3, GL_FLOAT, GL_TRUE,
-                              sizeof(glm::vec3), (GLvoid*)vsize);
+                              sizeof(glm::vec3), (GLvoid*)offset);
         const auto& normals = Vec3VectorToGlm(primitive.GetNormals());
-        auto nsize = normals.size() * sizeof(glm::vec3);
+        offset += normals.size() * sizeof(glm::vec3);*/
 
         // add uvs
-        auto uv = glGetAttribLocation(shaderProgram, "uv");
+        auto uv = glGetAttribLocation(shaderProgram, "texCoords");
         glVertexAttribPointer(uv, 2, GL_FLOAT, GL_FALSE,
-                              sizeof(glm::vec2), (GLvoid*)(vsize + nsize));
+                              sizeof(glm::vec2), (GLvoid*)offset);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
