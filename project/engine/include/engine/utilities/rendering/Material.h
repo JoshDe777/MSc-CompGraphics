@@ -1,9 +1,9 @@
 #pragma once
 
 #include "engine/utilities/Vector3.h"
+#include "engine/utilities/Color.h"
 
 namespace EisEngine {
-    using Vector3 = EisEngine::Vector3;
     namespace rendering{
         class Shader;
     }

@@ -17,7 +17,7 @@ namespace EisEngine::systems {
     private:
         /// \n A pointer to the active camera object.
         Camera* camera = nullptr;
-        /// \n VAO array storing a VAO for each type of mesh in order: Mesh2D, Line, SpriteMesh, uiMesh.
-        std::array<GLuint, 4> VAO;
+        /// \n VAO array storing a VAO for each type of mesh in order: Mesh2D, Line, Mesh3D, SpriteMesh, uiMesh.
+        std::array<GLuint, 5> VAO;
     };
 }

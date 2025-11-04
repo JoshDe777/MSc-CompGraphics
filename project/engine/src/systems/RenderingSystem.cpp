@@ -44,13 +44,14 @@ namespace EisEngine::systems {
         // re-enable depth testing for 'regular' entities.
         glEnable(GL_DEPTH_TEST);
         auto vpMatrix = camera->GetVPMatrix();
+        auto i = 0;
 
         #pragma region Default Shader
         auto activeShader = ResourceManager::GetShader("Default Shader");
 
         // Mesh2D rendering
         if(engine.componentManager.hasComponentOfType<Mesh2D>()){
-            glBindVertexArray(VAO[0]);
+            glBindVertexArray(VAO[i++]);
             activeShader->Apply(vpMatrix);
             engine.componentManager.forEachComponent<Mesh2D>([&](Mesh2D& mesh){
                 auto model = mesh.entity()->transform->GetModelMatrix();
@@ -64,7 +65,7 @@ namespace EisEngine::systems {
 
         // line rendering (same shader as Mesh2D's)
         if(engine.componentManager.hasComponentOfType<Line>()){
-            glBindVertexArray(VAO[1]);
+            glBindVertexArray(VAO[i++]);
             engine.componentManager.forEachComponent<Line>([&] (Line& mesh){
                 auto renderer = mesh.entity()->GetComponent<Renderer>();
                 if(renderer)
@@ -80,7 +81,16 @@ namespace EisEngine::systems {
         // Mesh3D rendering
         activeShader = ResourceManager::GetShader("3D Shader");
         if(engine.componentManager.hasComponentOfType<Mesh3D>()){
-            // do something here
+            glBindVertexArray(VAO[i++]);
+            activeShader->Apply(vpMatrix);
+            engine.componentManager.forEachComponent<Mesh3D>([&](Mesh3D& mesh){
+                auto model = mesh.entity()->transform->GetModelMatrix();
+                activeShader->setMatrix("mvp", activeShader->CalculateMVPMatrix(model));
+                auto renderer = mesh.entity()->GetComponent<Renderer>();
+                if(renderer)
+                    renderer->ApplyData(*activeShader);
+                mesh.draw(activeShader->GetShaderID());
+            });
         }
         #pragma endregion
 
@@ -93,7 +103,7 @@ namespace EisEngine::systems {
         std::vector<SpriteMesh*> uiSprites = {};
 
         if(engine.componentManager.hasComponentOfType<SpriteMesh>()){
-            glBindVertexArray(VAO[2]);
+            glBindVertexArray(VAO[i++]);
             activeShader->Apply(vpMatrix);
             engine.componentManager.forEachComponent<SpriteMesh>([&] (SpriteMesh& mesh){
                 auto renderer = mesh.entity()->GetComponent<Renderer>();
@@ -124,7 +134,7 @@ namespace EisEngine::systems {
 
         activeShader = ResourceManager::GetShader("UI Shader");
 
-        glBindVertexArray(VAO[3]);
+        glBindVertexArray(VAO[i++]);
         activeShader->Apply(vpMatrix);
         for (auto mesh : uiSprites) {
             auto renderer = mesh->entity()->GetComponent<Renderer>();

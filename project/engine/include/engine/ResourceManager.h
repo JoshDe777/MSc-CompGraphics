@@ -3,6 +3,7 @@
 #include "engine/utilities/rendering/Texture2D.h"
 #include "engine/utilities/rendering/Shader.h"
 #include "engine/utilities/rendering/Material.h"
+#include "engine/ecs/Entity.h"
 
 #include <filesystem>
 #include <map>

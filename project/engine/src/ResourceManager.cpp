@@ -47,7 +47,7 @@ namespace EisEngine {
         else    // if no built-in UVs, give each vertex a texture coord of (0, 0)
             uvs.assign(mesh->mNumVertices, Vector2(0, 0));
 
-        return PrimitiveMesh3D(vertices, indices, normals, uvs);
+        return PrimitiveMesh3D(vertices, indices, &normals, &uvs);
     }
 
     /// \n Imports material data from an assimp material.

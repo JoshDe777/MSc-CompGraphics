@@ -4,7 +4,7 @@
 namespace EisEngine {
     namespace rendering {
         // converts a std::vector of Vector3's to a std::vector of glm::vec3's.
-        std::vector<glm::vec3> Vector3ToGlmVector(const std::vector<Vector3>& v){
+        inline std::vector<glm::vec3> Vector3ToGlmVector(const std::vector<Vector3>& v){
             std::vector<glm::vec3> result = {};
             for(auto i : v)
                 result.emplace_back((glm::vec3) i);
@@ -12,7 +12,7 @@ namespace EisEngine {
         }
 
         // converts a std::vector of Vector2's to a std::vector of glm::vec2's.
-        std::vector<glm::vec2> Vector2ToGlmVector(const std::vector<Vector2>& v){
+        inline std::vector<glm::vec2> Vector2ToGlmVector(const std::vector<Vector2>& v){
             std::vector<glm::vec2> result = {};
             for(auto i : v)
                 result.emplace_back((glm::vec2) i);

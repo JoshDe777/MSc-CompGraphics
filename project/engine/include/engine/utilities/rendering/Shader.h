@@ -51,6 +51,8 @@ namespace EisEngine::rendering {
 
         /// \n A function called when an object is intentionally deleted.
         void Invalidate() const;
+        /// \n gets the shader program ID.
+        unsigned int GetShaderID() {return shaderProgram;}
     private:
         /// \n The OpenGL shader program.
         unsigned int shaderProgram = 0;

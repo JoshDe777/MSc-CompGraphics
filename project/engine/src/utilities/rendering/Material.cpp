@@ -5,4 +5,8 @@ namespace EisEngine {
                        const float &opacity, const float &metallic,
                        const float &roughness) :
             diffuse(diffuse), emission(emission), opacity(opacity), metallic(metallic), roughness(roughness) {}
+
+    void Material::ApplyTextureDataToShader(Material::Shader &shader) {
+        
+    }
 }
