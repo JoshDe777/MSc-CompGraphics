@@ -1,4 +1,5 @@
 #include "engine/utilities/rendering/Material.h"
+#include "engine/utilities/rendering/Shader.h"
 
 namespace EisEngine {
     Material::Material(const Vector3& diffuse, const Vector3 &emission,
@@ -6,7 +7,7 @@ namespace EisEngine {
                        const float &roughness) :
             diffuse(diffuse), emission(emission), opacity(opacity), metallic(metallic), roughness(roughness) {}
 
-    void Material::ApplyTextureDataToShader(Material::Shader &shader) {
-        
+    void Material::ApplyTextureDataToShader(Shader &shader) {
+        shader.setVector("diffuse", Color(diffuse, opacity));
     }
 }
