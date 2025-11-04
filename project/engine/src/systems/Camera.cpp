@@ -46,11 +46,16 @@ namespace EisEngine::systems {
     }
 
     glm::mat4 Camera::GetProjectionMatrix() const {
-        return glm::ortho(-aspectRatio / m_zoom,
-                          aspectRatio / m_zoom,
-                          -1.0f / m_zoom,
-                          1.0f / m_zoom,
-                          nearClip,
-                          farClip);
+        switch(mode){
+            case PERSPECTIVE:
+                return glm::perspective(fov, aspectRatio, nearClip, farClip);
+            case ORTHO:
+                return glm::ortho(-aspectRatio / m_zoom,
+                                  aspectRatio / m_zoom,
+                                  -1.0f / m_zoom,
+                                  1.0f / m_zoom,
+                                  nearClip,
+                                  farClip);
+        }
     }
 }

@@ -8,6 +8,11 @@ namespace EisEngine::systems {
     using Transform = EisEngine::components::Transform;
     using System = EisEngine::ecs::System;
 
+    enum CameraMode{
+        PERSPECTIVE = 0,
+        ORTHO = 1
+    };
+
     /// \n The system taking care of the camera, framing the game's graphics to the screen's display.
     /// \n Currently exclusively orthographic projection in -z direction.
     class Camera : public System {
@@ -45,6 +50,11 @@ namespace EisEngine::systems {
         /// \n Calculates the projection matrix, representing the transformation from
         /// camera space into 2D screen coordinates.
         [[nodiscard]] glm::mat4 GetProjectionMatrix() const;
+
+        /// \n Sets a new FOV value for the active camera.
+        void SetFOV(const float& val) {fov = val;}
+        /// \n Switches camera mode to the requested style.
+        void SetCameraMode(const CameraMode& newMode) {mode = newMode;}
     private:
         /// \n A pointer to the entity assigned to this object.
         Entity *entity;
@@ -65,6 +75,10 @@ namespace EisEngine::systems {
         float minZoomVal = 0.01f;
         /// \n the nearest the camera can zoom into the scene.
         float maxZoomVal = 5.0f;
+        /// \n the perspective camera FOV value in degrees.
+        float fov = 90;
+        /// \n The camera mode
+        CameraMode mode = PERSPECTIVE;
 
         /// \n updates the aspect ratio to width/height.
         void UpdateAspectRatio() { aspectRatio = (float) m_screenWidth / (float) m_screenHeight; }
