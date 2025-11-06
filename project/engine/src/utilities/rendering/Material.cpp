@@ -7,7 +7,7 @@ namespace EisEngine {
                        const float &roughness) :
             diffuse(diffuse), emission(emission), opacity(opacity), metallic(metallic), roughness(roughness) {}
 
-    void Material::ApplyTextureDataToShader(Shader &shader) {
+    void Material::ApplyMatData(Shader &shader) {
         shader.setVector("diffuse", Color(diffuse, opacity));
     }
 }

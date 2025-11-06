@@ -14,6 +14,7 @@ namespace EisEngine {
     std::map<std::string, std::unique_ptr<Shader>> ResourceManager::Shaders = {};
     Assimp::Importer importer;
 
+#pragma region 3D asset import
     /// \n Imports mesh data (vertices, normals, indices and UVs) from an assimp mesh.
     PrimitiveMesh3D ImportMesh(const aiMesh* mesh){
         // vertex collection -> take aiMesh's array of vertices and convert to own format of Vec3's
@@ -50,6 +51,90 @@ namespace EisEngine {
         return PrimitiveMesh3D(vertices, indices, &normals, &uvs);
     }
 
+    void ResourceManager::ImportNode(Game& game, const aiNode* node,
+                                     const aiScene* scene, const fs::path& modelPath, Entity* parent){
+        // if no meshes or children, return
+        if(node->mNumMeshes == 0 && node->mNumChildren == 0)
+            return;
+
+        DEBUG_LOG("Importing node " + std::string(node->mName.C_Str()) + " with " +
+                  std::to_string((node->mNumMeshes)) + " meshes.")
+
+        // Create entity for node & attach to parent if exists.
+        auto nodeEntity = game.entityManager.createEntity(node->mName.C_Str());
+        if(parent)
+            nodeEntity.transform->SetParent(parent->transform);
+
+        // foreach mesh in node->nMeshes
+        for(unsigned int i = 0; i < node->mNumMeshes; i++){
+
+            auto index = node->mMeshes[i];
+            auto mesh = scene->mMeshes[index];
+
+            // create submesh entity & attach to node entity.
+            auto submesh = &game.entityManager.createEntity(mesh->mName.C_Str());
+            submesh->transform->SetParent(nodeEntity.transform);
+
+            // Safety check — skip non-triangular or non-vertex meshes
+            if (!mesh->HasPositions() || mesh->mNumVertices == 0)
+                continue;
+
+            // get mesh data as primitiveMesh
+            auto primitive = ImportMesh(mesh);
+
+            // get texture & material data
+            auto assimpMaterial = scene->mMaterials[mesh->mMaterialIndex];
+            Material* mat = LoadMaterial(assimpMaterial);
+            auto tex = ImportTextureFromAssimp(assimpMaterial, scene, modelPath);
+
+            // get transform data & update entity transform
+            aiVector3D scale, pos;
+            aiQuaternion rotation;
+            node->mTransformation.Decompose(scale, rotation, pos);
+            submesh->transform->SetLocalScale(Vector3(scale));
+            Vector3 eulerRotation = Vector3(glm::eulerAngles(glm::quat(rotation.w, rotation.x, rotation.y, rotation.z)));
+            submesh->transform->SetLocalRotation(eulerRotation);
+            submesh->transform->SetLocalPosition(Vector3(pos));
+
+            // add Mesh3D & Renderer components
+            submesh->AddComponent<Mesh3D>(primitive);
+            submesh->AddComponent<Renderer>(tex, mat, "");
+        }
+
+        // import all child nodes recursively
+        for(unsigned int i = 0; i < node->mNumChildren; i++)
+            ImportNode(game, node->mChildren[i], scene, modelPath, &nodeEntity);
+    }
+
+    ecs::Entity* ResourceManager::Load3DObject(Game& game, const fs::path &path) {
+        auto fullPath = resolveAssetPath(path);
+        std::string pathString = fullPath.string();
+        // import the asset with a few optimizations for efficiency:
+        // meshes triangulated & optimized, normals generated if not exist, and tangents calculated for normals.
+        const aiScene* scene = importer.ReadFile(
+                pathString.c_str(), aiProcess_Triangulate | aiProcess_GenNormals |
+                                    aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace);
+
+        // exit with an error message if scene loading failed
+        // (scene = nullptr, scene flagged incomplete, or no root node).
+        if (!scene || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || !scene->mRootNode) {
+            DEBUG_ERROR("Assimp Error: " + std::string(importer.GetErrorString()))
+            return nullptr;
+        }
+
+        DEBUG_LOG("Loaded file " + path.string())
+
+        // recursively import data following the aiScene graph.
+        auto& rootEntity = game.entityManager.createEntity(path.filename().string());
+        ImportNode(game, scene->mRootNode, scene, path.parent_path(), &rootEntity);
+
+        // return the resulting entity.
+        return &rootEntity;
+    }
+#pragma endregion
+
+#pragma region Material handling
+
     /// \n Imports material data from an assimp material.
     Material* ResourceManager::LoadMaterial(const aiMaterial* mat){
         auto matName = std::string(mat->GetName().C_Str());
@@ -79,8 +164,8 @@ namespace EisEngine {
 
             // -metallic: no matkey
             auto metallic = 0.0f;
-            if(mat->Get("", 0, 0, metallic) != AI_SUCCESS)
-                mat->Get("", 0, 0, metallic);
+            if(mat->Get("$raw.Metalness", 0, 0, metallic) != AI_SUCCESS)
+                mat->Get("$mat.metallicFactor", 0, 0, metallic);
             result.SetMetallic(metallic);
 
             // save newly created texture.
@@ -92,19 +177,39 @@ namespace EisEngine {
         return Materials[matName].get();
     }
 
+    Material *ResourceManager::GetMaterial(const std::string &matname) {
+        // always have a default texture at the ready
+        if(matname == "default" && !Materials["default"].get())
+            Materials["default"] = std::make_unique<Material>(Material());
+
+        if(Materials.empty()){
+            DEBUG_WARN("No textures created in resource manager system.")
+            return nullptr;
+        }
+
+        return Materials[matname].get();
+    }
+#pragma endregion
+
+#pragma region Texture handling
     /// \n Imports the texture from a given material.
-    Texture2D* ResourceManager::ImportTextureFromAssimp(const aiMaterial* mat, const aiScene* scene) {
+    Texture2D* ResourceManager::ImportTextureFromAssimp(
+            const aiMaterial* mat, const aiScene* scene, const fs::path& modelPath) {
         const aiTexture *tex = nullptr;
 
         // get texture from material. Only embedded textures supported because yeah.
         aiString path;
         mat->GetTexture(aiTextureType_DIFFUSE, 0, &path);
         // check for embedded texture & error out if not.
+        DEBUG_INFO(path.C_Str())
         if (path.C_Str()[0] == '*')
             tex = scene->GetEmbeddedTexture(path.C_Str());
+        else if (path.length == 0)
+            return GetTexture("default");
         else {
-            DEBUG_ERROR("Using external textures is not supported in this engine version!")
-            return nullptr;
+            auto texPath = fs::path(modelPath.string() + path.C_Str());
+            DEBUG_LOG(texPath.string())
+            return nullptr; // GenerateTextureFromFile(texPath, path.C_Str());
         }
         auto textureName = std::string(tex->mFilename.C_Str());
 
@@ -139,94 +244,11 @@ namespace EisEngine {
         return GetTexture(textureName);
     }
 
-    void ResourceManager::ImportNode(Game& game, const aiNode* node,
-                                     const aiScene* scene, const fs::path& modelPath, Entity* parent){
-        // if no meshes or children, return
-        if(node->mNumMeshes == 0 && node->mNumChildren == 0)
-            return;
-
-        // Create entity for node & attach to parent if exists.
-        auto nodeEntity = game.entityManager.createEntity(node->mName.C_Str());
-        if(parent)
-            nodeEntity.transform->SetParent(parent->transform);
-
-        // foreach mesh in node->nMeshes
-        for(unsigned int i = 0; i < node->mNumMeshes; i++){
-
-            auto index = node->mMeshes[i];
-            auto mesh = scene->mMeshes[index];
-
-            // create submesh entity & attach to node entity.
-            auto submesh = &game.entityManager.createEntity(mesh->mName.C_Str());
-            submesh->transform->SetParent(nodeEntity.transform);
-
-            // Safety check — skip non-triangular or non-vertex meshes
-            if (!mesh->HasPositions() || mesh->mNumVertices == 0)
-                continue;
-
-            // get mesh data as primitiveMesh
-            auto primitive = ImportMesh(mesh);
-
-            // get texture & material data
-            auto assimpMaterial = scene->mMaterials[mesh->mMaterialIndex];
-            Material* mat = LoadMaterial(assimpMaterial);
-            auto tex = ImportTextureFromAssimp(assimpMaterial, scene);
-
-            // get transform data & update entity transform
-            aiVector3D scale, pos;
-            aiQuaternion rotation;
-            node->mTransformation.Decompose(scale, rotation, pos);
-            submesh->transform->SetLocalScale(Vector3(scale));
-            Vector3 eulerRotation = Vector3(glm::eulerAngles(glm::quat(rotation.w, rotation.x, rotation.y, rotation.z)));
-            submesh->transform->SetLocalRotation(eulerRotation);
-            submesh->transform->SetLocalPosition(Vector3(pos));
-
-            // add Mesh3D & Renderer components
-            submesh->AddComponent<Mesh3D>(primitive);
-            submesh->AddComponent<Renderer>(tex, mat, "");
-        }
-
-        // import all child nodes recursively
-        for(unsigned int i = 0; i < node->mNumChildren; i++)
-            ImportNode(game, node->mChildren[i], scene, modelPath, &nodeEntity);
-    }
-
-    ecs::Entity* ResourceManager::Load3DObject(Game& game, const fs::path &path) {
-        std::string pathString = path.string();
-        // import the asset with a few optimizations for efficiency:
-        // meshes triangulated & optimized, normals generated if not exist, and tangents calculated for normals.
-        const aiScene* scene = importer.ReadFile(
-                pathString.c_str(), aiProcess_Triangulate | aiProcess_GenNormals |
-                aiProcess_OptimizeMeshes | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace);
-
-        // exit with an error message if scene loading failed
-        // (scene = nullptr, scene flagged incomplete, or no root node).
-        if (!scene || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || !scene->mRootNode) {
-            DEBUG_ERROR("Assimp Error: " + std::string(importer.GetErrorString()))
-            return nullptr;
-        }
-
-        // recursively import data following the aiScene graph.
-        auto& rootEntity = game.entityManager.createEntity(path.filename().string());
-        ImportNode(game, scene->mRootNode, scene, path.parent_path(), &rootEntity);
-
-        // return the resulting entity.
-        return &rootEntity;
-    }
-
     Texture2D* ResourceManager::GenerateTextureFromFile( const fs::path &imagePath, const std::string &textureName) {
-        if(Textures[textureName] == nullptr)
+        if (Textures[textureName] == nullptr)
             Textures[textureName] = std::make_unique<Texture2D>(
                     loadTextureFromFile(resolveAssetPath(imagePath)));
         return GetTexture(textureName);
-    }
-
-    Texture2D *ResourceManager::GetTexture(const std::string &name) {
-        if(Textures.empty()){
-            DEBUG_WARN("No textures created in resource manager system.")
-            return nullptr;
-        }
-        return Textures[name].get();
     }
 
     Texture2D ResourceManager::loadTextureFromFile(const fs::path& filePath) {
@@ -248,11 +270,46 @@ namespace EisEngine {
         }
 
         texture.Generate(width, height, data);
-        
+
         stbi_image_free(data);
 
         return texture;
     }
+
+    Texture2D *ResourceManager::MakeDummyTexture() {
+        if(Textures["default"] == nullptr){
+            Texture2D texture;
+
+            int width = 1;
+            int height = 1;
+            unsigned char data[4] = {255, 255, 255, 255};
+
+            texture.internalFormat = GL_RGBA;
+            texture.imageFormat = GL_RGBA;
+
+            texture.Generate(width, height, data);
+            Textures["default"] = std::make_unique<Texture2D>(texture);
+        }
+        else
+            DEBUG_WARN("Attempting to overwrite texture 'default'.")
+        return GetTexture("default");
+    }
+
+    Texture2D *ResourceManager::GetTexture(const std::string &name) {
+        // always have a default texture at the ready
+        if(name == "default" && !Textures["default"].get())
+            return MakeDummyTexture();
+
+        if(Textures.empty()){
+            DEBUG_WARN("No textures created in resource manager system.")
+            return nullptr;
+        }
+
+        return Textures[name].get();
+    }
+#pragma endregion
+
+#pragma region Shader handling
 
     Shader *ResourceManager::GenerateShaderFromFiles(const fs::path &vertexShaderPath,
                                                      const fs::path &fragmentShaderPath,
@@ -261,7 +318,7 @@ namespace EisEngine {
             Shaders[shaderName] = std::make_unique<Shader>(
                     loadAndCompileShader(GL_VERTEX_SHADER, vertexShaderPath),
                     loadAndCompileShader(GL_FRAGMENT_SHADER, fragmentShaderPath)
-                    );
+            );
         return GetShader(shaderName);
     }
 
@@ -271,13 +328,6 @@ namespace EisEngine {
             return nullptr;
         }
         return Shaders[name].get();
-    }
-
-    std::string ResourceManager::ReadText(const fs::path &path) {
-        std::ifstream sourceFile(resolveAssetPath(path));
-        std::stringstream buffer;
-        buffer << sourceFile.rdbuf();
-        return buffer.str();
     }
 
     unsigned int ResourceManager::loadAndCompileShader(GLuint shaderType, const fs::path &filePath) {
@@ -293,10 +343,18 @@ namespace EisEngine {
         if(compilationStatus.success == GL_FALSE) {
             glGetShaderInfoLog(shaderID, GL_INFO_LOG_LENGTH, nullptr, compilationStatus.infoLog);
             DEBUG_RUNTIME_ERROR( std::string(compilationStatus.shaderName) + " shader compilation failed.\n" +
-            std::string(compilationStatus.infoLog))
+                                 std::string(compilationStatus.infoLog))
         }
 
         return shaderID;
+    }
+#pragma endregion
+
+    std::string ResourceManager::ReadText(const fs::path &path) {
+        std::ifstream sourceFile(resolveAssetPath(path));
+        std::stringstream buffer;
+        buffer << sourceFile.rdbuf();
+        return buffer.str();
     }
 
     void ResourceManager::Clear(){

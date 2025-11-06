@@ -50,6 +50,10 @@ namespace EisEngine {
         /// \n fetches a texture using its name.
         static Texture2D* GetTexture(const std::string& name);
 
+        /// \n fetches a material using its name.
+        static Material* GetMaterial(const std::string& matname);
+
+        /// \n fetches a shader using its name.
         static Shader* GetShader(const std::string& name);
 
         /// \n Generates a shader program from the given file.
@@ -93,7 +97,11 @@ namespace EisEngine {
         static Texture2D loadTextureFromFile(const fs::path& filePath);
 
         /// \n loads a texture from an assimp scene.
-        static Texture2D* ImportTextureFromAssimp(const aiMaterial* mat, const aiScene* scene);
+        static Texture2D* ImportTextureFromAssimp(const aiMaterial* mat, const aiScene* scene,
+                                                  const fs::path& modelPath);
+
+        /// \n creates a dummy, white texture.
+        static Texture2D* MakeDummyTexture();
         #pragma endregion
 
         #pragma region Materials

@@ -3,11 +3,12 @@
 #include "engine/Game.h"
 
 namespace EisEngine::systems {
-    Camera::Camera(EisEngine::Game &engine, const Vector2& screenDimensions):
+    Camera::Camera(EisEngine::Game &engine, const Vector2& screenDimensions, CameraMode cameraMode):
     System(engine),
     m_screenWidth((int) screenDimensions.x),
     m_screenHeight((int) screenDimensions.y),
-    aspectRatio(screenDimensions.x / screenDimensions.y)
+    aspectRatio(screenDimensions.x / screenDimensions.y),
+    nearClip(cameraMode == PERSPECTIVE ? 0.1f : -1)
     {
         entity = &engine.entityManager.createEntity("Camera");
         transform = entity->transform;
@@ -48,7 +49,7 @@ namespace EisEngine::systems {
     glm::mat4 Camera::GetProjectionMatrix() const {
         switch(mode){
             case PERSPECTIVE:
-                return glm::perspective(fov, aspectRatio, nearClip, farClip);
+                return glm::perspective(Math::DegreesToRadians(fov), aspectRatio, nearClip, farClip);
             case ORTHO:
                 return glm::ortho(-aspectRatio / m_zoom,
                                   aspectRatio / m_zoom,

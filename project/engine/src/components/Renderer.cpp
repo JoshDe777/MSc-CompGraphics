@@ -1,4 +1,5 @@
 #include "engine/components/Renderer.h"
+#include "engine/ResourceManager.h"
 
 namespace EisEngine::components {
     Renderer::Renderer(EisEngine::Game &engine,
@@ -8,7 +9,12 @@ namespace EisEngine::components {
                        Component(engine, owner),
                        texture(tex),
                        material(mat),
-                       m_layer(std::move(layer)) { }
+                       m_layer(std::move(layer)) {
+        if(!tex)
+            texture = ResourceManager::GetTexture("default");
+        if(!mat)
+            material = ResourceManager::GetMaterial("default");
+    }
 
     Renderer::Renderer(EisEngine::components::Renderer &&other) noexcept :
             Component(other) {
@@ -20,7 +26,7 @@ namespace EisEngine::components {
 
     // applies the selected color to the active shader.
     void Renderer::ApplyData(Shader& shader) {
-        material->ApplyTextureDataToShader(shader);
+        material->ApplyMatData(shader);
 
         if(!texture)
             return;

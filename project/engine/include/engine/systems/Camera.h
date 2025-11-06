@@ -19,7 +19,7 @@ namespace EisEngine::systems {
     public:
         /// \n Creates a new camera for the scene.
         /// @param screenDimensions - Vector2: the width and height of the camera FOV in pixels.
-        explicit Camera(Game &engine, const Vector2& screenDimensions);
+        explicit Camera(Game &engine, const Vector2& screenDimensions, CameraMode cameraMode = PERSPECTIVE);
 
         /// \n Calculates and returns the view-projection matrix.
         /// \n Projection matrix being the directions in which the camera is pointing,
@@ -62,7 +62,7 @@ namespace EisEngine::systems {
         /// \n The camera's aspect ratio, as width/height.
         float aspectRatio;
         /// \n The distance at which the camera starts to clip due to proximity to the camera.
-        float nearClip = -1;
+        float nearClip;
         /// \n The distance at which the camera starts to clip due to distance from the camera.
         float farClip = 10;
         /// \n the screen width in pixels.

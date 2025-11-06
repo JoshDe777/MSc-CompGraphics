@@ -13,6 +13,9 @@ namespace EisEngine {
                                  const std::vector<unsigned int> &shapeIndices,
                                  const std::vector<Vector3>* shapeNormals = nullptr,
                                  const std::vector<Vector2>* shapeUVs = nullptr);
+        /// \n A standard 1x1x1 cube.
+        static const PrimitiveMesh3D cube;
+
         /// \n Access the mesh's vertices.
         [[nodiscard]] std::vector<Vector3> GetVertices() const override;
         [[nodiscard]] std::vector<Vector3> GetNormals() const;

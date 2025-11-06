@@ -1,6 +1,13 @@
 #include "engine/components/meshes/Mesh3D.h"
 
 namespace EisEngine::components {
+    void GLCheckError(const char* context) {
+        GLenum error = glGetError();
+        if (error != GL_NO_ERROR) {
+            DEBUG_ERROR("OpenGL Error: (" + std::string(context) + "): " + std::to_string(error))
+        }
+    }
+
     // create and fill an openGL buffer object of the specified type.
     template<typename T>
     GLuint CreateBuffer(GLuint bufferType, const std::vector<T> &bufferData) {
@@ -61,12 +68,12 @@ namespace EisEngine::components {
 
     void Mesh3D::draw(const unsigned int& shaderProgram) {
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glEnableVertexAttribArray(shaderProgram);
 
         // draw vertices
         auto vpos = glGetAttribLocation(shaderProgram, "aPos");
+        glEnableVertexAttribArray(vpos);
         glVertexAttribPointer(vpos, 3, GL_FLOAT, GL_FALSE,
-                              sizeof(glm::vec3), nullptr);
+                              0, nullptr);
         const auto& vertices = Vec3VectorToGlm(primitive.GetVertices());
         auto offset = vertices.size() * sizeof(glm::vec3);
 
@@ -80,10 +87,12 @@ namespace EisEngine::components {
         // add uvs
         auto uv = glGetAttribLocation(shaderProgram, "texCoords");
         glVertexAttribPointer(uv, 2, GL_FLOAT, GL_FALSE,
-                              sizeof(glm::vec2), (GLvoid*)offset);
+                              0, (GLvoid*)offset);
+        glEnableVertexAttribArray(uv);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
         glDrawElements(GL_TRIANGLES, primitive.indexCount, GL_UNSIGNED_INT, nullptr);
+        GLCheckError("DrawElements");
     }
 }

@@ -31,7 +31,7 @@ namespace EisEngine {
                 const float& roughness = 0.5f
             );
 
-        void ApplyTextureDataToShader(Shader& shader);
+        void ApplyMatData(Shader& shader);
 
         #pragma region getters
         const Vector3& GetDiffuse() {return diffuse;}
