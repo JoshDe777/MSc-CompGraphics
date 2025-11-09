@@ -14,7 +14,7 @@ namespace EisEngine {
     public:
         /// \n Creates a new Material object from the given data.
         /// @param diffuse - Vector3: The base, lit color/tint for the object.\n
-        ///     Defaults to white (1,1,1).
+        ///     Defaults to white (255,255,255).
         /// @param emission - Vector3: The color of light emitted by the object in all directions.\n
         ///     Defaults to black (0,0,0) - no light emitted.
         /// @param opacity - float: The object's opacity = inverse transparency.\n
@@ -24,21 +24,27 @@ namespace EisEngine {
         /// @param roughness - float: The inverse surface uniformity - the rougher the surface, the noisier the lighting effects.\n
         ///     Defaults to 0.5 (semi-matte)
         explicit Material(
-                const Vector3& diffuse = Vector3::one,
+                std::string  name,
+                const Vector3& diffuse = Vector3(255, 255, 255),
                 const Vector3& emission = Vector3::zero,
                 const float& opacity = 1,
                 const float& metallic = 0,
                 const float& roughness = 0.5f
             );
 
+        /// \n Applies material data to the active shader.
         void ApplyMatData(Shader& shader);
+
+        /// \n Prints out the material's values for debugging purposes.
+        void Print();
 
         #pragma region getters
         const Vector3& GetDiffuse() {return diffuse;}
         const Vector3& GetEmission() {return emission;}
-        const float& GetOpacity() {return opacity;}
-        const float& GetMetallic() {return metallic;}
-        const float& GetRoughness() {return roughness;}
+        const float& GetOpacity() const {return opacity;}
+        const float& GetMetallic() const {return metallic;}
+        const float& GetRoughness() const {return roughness;}
+        const std::string& Name() {return name;}
         #pragma endregion
 
         #pragma region setters
@@ -55,6 +61,7 @@ namespace EisEngine {
         float opacity;
         float metallic;
         float roughness;
+        std::string name;
     };
 }
 

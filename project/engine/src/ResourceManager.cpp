@@ -20,6 +20,9 @@ namespace EisEngine {
         // vertex collection -> take aiMesh's array of vertices and convert to own format of Vec3's
         std::vector<Vector3> vertices(mesh->mVertices, mesh->mVertices + mesh->mNumVertices);
 
+        /*for(auto v : vertices)
+            DEBUG_INFO((std::string) v)*/
+
         // index collection -> iterate through faces & insert the indices for each triangle.
         std::vector<unsigned int> indices = {};
         for(auto i = 0; i < mesh->mNumFaces; i++){
@@ -139,7 +142,7 @@ namespace EisEngine {
     Material* ResourceManager::LoadMaterial(const aiMaterial* mat){
         auto matName = std::string(mat->GetName().C_Str());
         if(Materials[matName] == nullptr){
-            auto result = *new Material();
+            auto result = *new Material(matName);
             // get properties:
             // -diffuse color AI_MATKEY_COLOR_DIFFUSE
             aiVector3D diffuse;
@@ -180,7 +183,7 @@ namespace EisEngine {
     Material *ResourceManager::GetMaterial(const std::string &matname) {
         // always have a default texture at the ready
         if(matname == "default" && !Materials["default"].get())
-            Materials["default"] = std::make_unique<Material>(Material());
+            Materials["default"] = std::make_unique<Material>(Material("default"));
 
         if(Materials.empty()){
             DEBUG_WARN("No textures created in resource manager system.")
@@ -201,15 +204,15 @@ namespace EisEngine {
         aiString path;
         mat->GetTexture(aiTextureType_DIFFUSE, 0, &path);
         // check for embedded texture & error out if not.
-        DEBUG_INFO(path.C_Str())
         if (path.C_Str()[0] == '*')
             tex = scene->GetEmbeddedTexture(path.C_Str());
         else if (path.length == 0)
             return GetTexture("default");
         else {
-            auto texPath = fs::path(modelPath.string() + path.C_Str());
+            DEBUG_INFO(path.C_Str())
+            auto texPath = fs::path(modelPath.string() + "\\" + path.C_Str());
             DEBUG_LOG(texPath.string())
-            return nullptr; // GenerateTextureFromFile(texPath, path.C_Str());
+            return GetTexture("default"); // GenerateTextureFromFile(texPath, path.C_Str());
         }
         auto textureName = std::string(tex->mFilename.C_Str());
 

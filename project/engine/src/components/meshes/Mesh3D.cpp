@@ -69,6 +69,9 @@ namespace EisEngine::components {
     void Mesh3D::draw(const unsigned int& shaderProgram) {
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
+        // test index order matching?
+        glDisable(GL_CULL_FACE);
+
         // draw vertices
         auto vpos = glGetAttribLocation(shaderProgram, "aPos");
         glEnableVertexAttribArray(vpos);
@@ -94,5 +97,7 @@ namespace EisEngine::components {
 
         glDrawElements(GL_TRIANGLES, primitive.indexCount, GL_UNSIGNED_INT, nullptr);
         GLCheckError("DrawElements");
+
+        glEnable(GL_CULL_FACE);
     }
 }

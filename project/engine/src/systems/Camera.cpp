@@ -8,7 +8,8 @@ namespace EisEngine::systems {
     m_screenWidth((int) screenDimensions.x),
     m_screenHeight((int) screenDimensions.y),
     aspectRatio(screenDimensions.x / screenDimensions.y),
-    nearClip(cameraMode == PERSPECTIVE ? 0.1f : -1)
+    nearClip(cameraMode == PERSPECTIVE ? 0.1f : -1),
+    farClip(cameraMode == PERSPECTIVE ? 100 : 10)
     {
         entity = &engine.entityManager.createEntity("Camera");
         transform = entity->transform;
