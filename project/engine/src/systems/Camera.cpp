@@ -38,6 +38,7 @@ namespace EisEngine::systems {
     }
 
     glm::mat4 Camera::CalculateViewMatrix() const {
+        // zoom pos offsets here!
         glm::vec3 cameraPos = (glm::vec3) transform->GetGlobalPosition();
         // (facing negative Z at rotation (0, 0, 0))
         glm::vec3 cameraDir = -(glm::vec3) transform->Forward();

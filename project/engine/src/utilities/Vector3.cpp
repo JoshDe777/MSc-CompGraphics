@@ -124,6 +124,8 @@ namespace EisEngine{
         float y3 = y2;
         float z3 = -x2 * yawSin + z2 * yawCos;
 
-        return Vector3(x3, y3, z3);
+        return Vector3(Math::RadiansToDegrees(x3),
+                       Math::RadiansToDegrees(y3),
+                       Math::RadiansToDegrees(z3));
     }
 }

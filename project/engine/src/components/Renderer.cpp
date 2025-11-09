@@ -5,7 +5,8 @@ namespace EisEngine::components {
     Renderer::Renderer(EisEngine::Game &engine,
                        EisEngine::ecs::guid_t owner,
                        EisEngine::Texture2D *tex,
-                       EisEngine::Material *mat, std::string layer) :
+                       EisEngine::Material* mat,
+                       std::string layer) :
                        Component(engine, owner),
                        texture(tex),
                        material(mat),
@@ -13,7 +14,7 @@ namespace EisEngine::components {
         if(!tex)
             texture = ResourceManager::GetTexture("default");
         if(!mat)
-            material = ResourceManager::GetMaterial("default");
+            material = ResourceManager::GetMaterialInstance("default");
     }
 
     Renderer::Renderer(EisEngine::components::Renderer &&other) noexcept :
@@ -35,8 +36,6 @@ namespace EisEngine::components {
     }
 
     void Renderer::Invalidate() {
-        delete material;
-        material = nullptr;
         Component::Invalidate();
     }
 }

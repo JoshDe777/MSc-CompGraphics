@@ -3,7 +3,7 @@
 #include <EisEngine.h>
 
 #include "GameObjects/Car.h"
-#include "GameObjects/Cube.h"
+#include "GameObjects/Steve.h"
 #include "Scripts/CamController.h"
 
 using namespace Maze;
@@ -13,6 +13,6 @@ public:
     explicit MinotaursMaze();
 private:
     Car* car = nullptr;
-    Cube* cube = nullptr;
+    Steve* steve = nullptr;
     CamController* controller = nullptr;
 };

@@ -1,0 +1,77 @@
+#include "Steve.h"
+
+namespace Maze {
+    Steve::Steve(Game &game) {
+        torso = &game.entityManager.createEntity("Steve");
+        torso->AddComponent<Mesh3D>(PrimitiveMesh3D::cube);
+        torso->AddComponent<Renderer>().material
+            ->SetDiffuse(Color((float)98/255, (float)147/255, (float)227/255, 1));
+        torso->transform->SetGlobalScale(Vector3(1, 2, 0.75));
+
+        neck = &game.entityManager.createEntity("NeckJoint");
+        neck->transform->SetParent(torso->transform);
+        neck->transform->SetLocalPosition(Vector3(0, 1, 0));
+
+        auto head = &game.entityManager.createEntity("Head");
+        head->transform->SetParent(neck->transform);
+        head->AddComponent<Mesh3D>(PrimitiveMesh3D::cube);
+        head->AddComponent<Renderer>().material
+                ->SetDiffuse(Color((float)247/255, (float)228/255, (float)232/255, 1));
+        head->transform->SetGlobalScale(Vector3((float)3/4, (float)3/4, (float)3/4));
+        head->transform->SetLocalPosition(Vector3(0, (float)3/8, 0));
+
+        shoulderL = &game.entityManager.createEntity("ShoulderLJoint");
+        shoulderL->transform->SetParent(torso->transform);
+        shoulderL->transform->SetLocalPosition(Vector3(-0.7f, 0.8f, 0));
+
+        auto armL = &game.entityManager.createEntity("LeftArm");
+        armL->transform->SetParent(shoulderL->transform);
+        armL->AddComponent<Mesh3D>(PrimitiveMesh3D::cube);
+        armL->AddComponent<Renderer>().material
+            ->SetDiffuse(Color((float)98/255, (float)147/255, (float)227/255, 1));
+        armL->transform->SetGlobalScale(Vector3(0.4f,2,0.4f));
+        armL->transform->SetLocalPosition(Vector3(0,-0.8f, 0));
+
+        shoulderR = &game.entityManager.createEntity("ShoulderRJoint");
+        shoulderR->transform->SetParent(torso->transform);
+        shoulderR->transform->SetLocalPosition(Vector3(0.7f, 0.8f, 0));
+
+        auto armR = &game.entityManager.createEntity("RightArm");
+        armR->transform->SetParent(shoulderR->transform);
+        armR->AddComponent<Mesh3D>(PrimitiveMesh3D::cube);
+        armR->AddComponent<Renderer>().material
+                ->SetDiffuse(Color((float)98/255, (float)147/255, (float)227/255, 1));
+        armR->transform->SetGlobalScale(Vector3(0.4f,2,0.4f));
+        armR->transform->SetLocalPosition(Vector3(0,-0.8f, 0));
+
+        hipL = &game.entityManager.createEntity("HipLJoint");
+        hipL->transform->SetParent(torso->transform);
+        hipL->transform->SetLocalPosition(Vector3(-0.25f, -1, 0));
+
+        auto legL = &game.entityManager.createEntity("LeftLeg");
+        legL->transform->SetParent(hipL->transform);
+        legL->AddComponent<Mesh3D>(PrimitiveMesh3D::cube);
+        legL->AddComponent<Renderer>().material->SetDiffuse(Color::blue);
+        legL->transform->SetGlobalScale(Vector3(0.5f,2,0.75f));
+        legL->transform->SetLocalPosition(Vector3(0,-1, 0));
+
+        hipR = &game.entityManager.createEntity("HipRJoint");
+        hipR->transform->SetParent(torso->transform);
+        hipR->transform->SetLocalPosition(Vector3(0.25f, -1, 0));
+
+        auto legR = &game.entityManager.createEntity("RightLeg");
+        legR->transform->SetParent(hipR->transform);
+        legR->AddComponent<Mesh3D>(PrimitiveMesh3D::cube);
+        legR->AddComponent<Renderer>().material->SetDiffuse(Color::blue);
+        legR->transform->SetGlobalScale(Vector3(0.5f,2,0.75f));
+        legR->transform->SetLocalPosition(Vector3(0,-1, 0));
+
+        game.onUpdate.addListener([&] (Game& game){
+           Animate();
+        });
+    }
+
+    void Steve::Animate() {
+
+    }
+}

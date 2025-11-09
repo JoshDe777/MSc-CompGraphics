@@ -21,8 +21,8 @@ namespace EisEngine {
             /// @param layer - std::string: The rendering layer for meshes paired with a renderer.
             /// \n Currently supported: {"UI" for UI Elements, and [any other string] for regular rendering}.
             Renderer(Game &engine, guid_t owner,
-                     Texture2D* tex,
-                     Material* mat,
+                     Texture2D* tex = nullptr,
+                     Material* mat = nullptr,
                      std::string  layer = "Background");
             Renderer(const Renderer &renderer) = delete;
             Renderer(Renderer &&other) noexcept;
@@ -37,15 +37,13 @@ namespace EisEngine {
             /// \n Returns a pointer to the texture assigned to a renderer.
             Texture2D* GetTexture() { return texture;}
 
-            /// \n Returns a pointer to the material assigned to a renderer.
-            Material* GetMaterial() { return material;}
+            /// \n The material attributed to the associated mesh.
+            std::unique_ptr<Material> material;
         protected:
             /// \n A function called when a component is intentionally deleted.
             void Invalidate() override;
             /// \n the texture attributed to the associated mesh.
             Texture2D* texture;
-            /// \n The material attributed to the associated mesh.
-            Material* material;
             /// \n The rendering layer of the associated mesh.
             std::string m_layer;
         };

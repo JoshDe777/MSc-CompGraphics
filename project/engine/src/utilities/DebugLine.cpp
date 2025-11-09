@@ -25,5 +25,5 @@ namespace EisEngine {
     { entity->GetComponent<Line>()->SetPoints(startPoint, endPoint);}
 
     void DebugLine::UpdateColor(const EisEngine::Color &color)
-    { entity->GetComponent<Renderer>()->GetMaterial()->SetDiffuse(color);}
+    { entity->GetComponent<Renderer>()->material->SetDiffuse(color);}
 }

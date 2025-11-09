@@ -192,6 +192,19 @@ namespace EisEngine {
 
         return Materials[matname].get();
     }
+
+    std::unique_ptr<Material> ResourceManager::GetMaterialInstance(const std::string &matname) {
+        // always have a default texture at the ready
+        if(matname == "default" && !Materials["default"].get())
+            Materials["default"] = std::make_unique<Material>(Material("default"));
+
+        if(Materials.empty()){
+            DEBUG_WARN("No textures created in resource manager system.")
+            return nullptr;
+        }
+
+        return std::make_unique<Material>(*Materials[matname].get());
+    }
 #pragma endregion
 
 #pragma region Texture handling

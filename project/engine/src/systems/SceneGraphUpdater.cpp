@@ -24,7 +24,7 @@ namespace EisEngine::systems{
         model = glm::translate(model, (glm::vec3) transform.GetGlobalPosition());
         model = glm::rotate(model, glm::radians(transform.GetLocalRotation().z),
                             glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::scale(model, (glm::vec3) transform.GetLocalScale());
+        model = glm::scale(model, (glm::vec3) transform.GetGlobalScale());
         return model;
     }
 }

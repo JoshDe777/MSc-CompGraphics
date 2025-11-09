@@ -52,6 +52,8 @@ namespace EisEngine {
 
         /// \n fetches a material using its name.
         static Material* GetMaterial(const std::string& matname);
+        /// \n creates an instance of a material using its name.
+        static std::unique_ptr<Material> GetMaterialInstance(const std::string& matname);
 
         /// \n fetches a shader using its name.
         static Shader* GetShader(const std::string& name);

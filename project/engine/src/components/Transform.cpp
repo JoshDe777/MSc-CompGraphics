@@ -177,8 +177,9 @@ namespace EisEngine::components{
 
     // transformations
     void Transform::Translate(const Vector3 &direction) { SetLocalPosition(localPosition + direction);}
-    void Transform::Rotate(const Vector3 &vector)
-    { SetLocalRotation(NormalizeAngles(localRotation.Rotate(vector)));}
+    void Transform::Rotate(const Vector3 &vector) {
+        SetLocalRotation(NormalizeAngles(localRotation + vector));
+    }
     void Transform::Rescale(const Vector3 &scalingFactors) {
         SetLocalScale(Vector3
         (localScale.x * scalingFactors.x,
