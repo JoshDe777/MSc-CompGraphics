@@ -60,5 +60,6 @@ namespace EisEngine::systems {
                                   nearClip,
                                   farClip);
         }
+        return glm::mat4(1.0f);
     }
 }
