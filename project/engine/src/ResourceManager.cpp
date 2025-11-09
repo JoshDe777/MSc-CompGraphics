@@ -14,14 +14,20 @@ namespace EisEngine {
     std::map<std::string, std::unique_ptr<Shader>> ResourceManager::Shaders = {};
     Assimp::Importer importer;
 
+    Vector3 GetAveragePos(const std::vector<Vector3>& v){
+        Vector3 res = Vector3();
+        float modifier = (float) 1 / v.size();
+        for(auto vx : v)
+            res += vx * modifier;
+
+        return res;
+    }
+
 #pragma region 3D asset import
     /// \n Imports mesh data (vertices, normals, indices and UVs) from an assimp mesh.
     PrimitiveMesh3D ImportMesh(const aiMesh* mesh){
         // vertex collection -> take aiMesh's array of vertices and convert to own format of Vec3's
         std::vector<Vector3> vertices(mesh->mVertices, mesh->mVertices + mesh->mNumVertices);
-
-        /*for(auto v : vertices)
-            DEBUG_INFO((std::string) v)*/
 
         // index collection -> iterate through faces & insert the indices for each triangle.
         std::vector<unsigned int> indices = {};
