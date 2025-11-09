@@ -52,7 +52,7 @@ namespace Maze {
         legL->transform->SetParent(hipL->transform);
         legL->AddComponent<Mesh3D>(PrimitiveMesh3D::cube);
         legL->AddComponent<Renderer>().material->SetDiffuse(Color::blue);
-        legL->transform->SetGlobalScale(Vector3(0.5f,2,0.75f));
+        legL->transform->SetGlobalScale(Vector3(0.4f,2,0.4f));
         legL->transform->SetLocalPosition(Vector3(0,-1, 0));
 
         hipR = &game.entityManager.createEntity("HipRJoint");
@@ -63,7 +63,7 @@ namespace Maze {
         legR->transform->SetParent(hipR->transform);
         legR->AddComponent<Mesh3D>(PrimitiveMesh3D::cube);
         legR->AddComponent<Renderer>().material->SetDiffuse(Color::blue);
-        legR->transform->SetGlobalScale(Vector3(0.5f,2,0.75f));
+        legR->transform->SetGlobalScale(Vector3(0.4f,2,0.4f));
         legR->transform->SetLocalPosition(Vector3(0,-1, 0));
 
         game.onUpdate.addListener([&] (Game& game){
@@ -72,6 +72,25 @@ namespace Maze {
     }
 
     void Steve::Animate() {
+        // rotate
 
+        //torso->transform->Rotate(Vector3(0, 1, 0));
+
+        // walk animation:
+        animTime += Time::deltaTime;
+
+        float stepAngle = Math::Sin(animTime * animSpeed) * stride;
+        auto rotation = Vector3(stepAngle, 0, 0);
+
+        shoulderL->transform->SetLocalRotation(rotation);
+        //debugging
+        auto p_rotation = shoulderL->transform->parent()->GetGlobalRotation();
+
+        hipR->transform->SetLocalRotation(rotation);
+        shoulderR->transform->SetLocalRotation(-rotation);
+        hipL->transform->SetLocalRotation(-rotation);
+
+        // move forward
+        torso->transform->Translate(-torso->transform->Forward() * moveSpeed * Time::deltaTime);
     }
 }

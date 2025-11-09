@@ -13,7 +13,7 @@ namespace Maze {
         Transform* focusTransform = nullptr;
         Game& game;
 
-        float movementSpeed = 0.25f;
+        float movementSpeed = 0.5f;
         float flyModifier = 20;
         float rotationSpeed = 50;
         float maxRotationDeg = 360;

@@ -23,7 +23,12 @@ namespace EisEngine::components{
     inline Vector3 ConvertMatrixToEuler(const glm::mat4& mat) {
         glm::vec3 euler;
         glm::extractEulerAngleYXZ(mat, euler.y, euler.x, euler.z);
-        return Vector3(euler);
+
+        return Vector3(
+                Math::RadiansToDegrees(euler.x),
+                Math::RadiansToDegrees(euler.y),
+                Math::RadiansToDegrees(euler.z)
+            );
     }
 
     // calculate the difference in rotation between two angles along each axis.
@@ -80,17 +85,21 @@ namespace EisEngine::components{
     }
     Vector3 Transform::GetGlobalRotation() const{
         if (m_parent) {
+            auto p_rotation = m_parent->GetGlobalRotation();
             glm::mat4 parentGlobalRotationMatrix = glm::eulerAngleYXZ(
-                    glm::radians(m_parent->GetGlobalRotation().y),
-                    glm::radians(m_parent->GetGlobalRotation().x),
-                    glm::radians(m_parent->GetGlobalRotation().z)
+                    glm::radians(p_rotation.y),
+                    glm::radians(p_rotation.x),
+                    glm::radians(p_rotation.z)
             );
             glm::mat4 localRotationMatrix = glm::eulerAngleYXZ(
                     glm::radians(localRotation.y),
                     glm::radians(localRotation.x),
                     glm::radians(localRotation.z)
             );
-            glm::mat4 globalRotationMatrix = parentGlobalRotationMatrix * localRotationMatrix;
+            glm::mat4 globalRotationMatrix = localRotationMatrix * parentGlobalRotationMatrix;
+
+            // make matrix rotation-only to remove noisy translation data.
+            globalRotationMatrix[3] = glm::vec4(0, 0, 0, 1);
             return ConvertMatrixToEuler(globalRotationMatrix);
         } else
             return localRotation;
@@ -117,6 +126,7 @@ namespace EisEngine::components{
             localPosition = pos;
         m_positionChanged = true;
     }
+
     void Transform::SetGlobalRotation(const Vector3& newRotation) {
         Vector3 angularDiff;
         if (m_parent) {
@@ -202,6 +212,8 @@ namespace EisEngine::components{
         if(children.empty())
             return;
 
+        //glm::mat4 parentMatrix = GetLocalMatrix();
+
         glm::mat4 rotationMatrix = glm::eulerAngleXYZ(
                 glm::radians(angleDifference.x),
                 glm::radians(angleDifference.y),
@@ -209,7 +221,6 @@ namespace EisEngine::components{
 
         for (auto& child : children) {
             auto childLocalPosition = child->GetLocalPosition();
-
             glm::vec4 newGlobalPositionVec4 = rotationMatrix * glm::vec4((glm::vec3) childLocalPosition, 1.0f);
 
             auto newGlobalPosition = Vector3(
@@ -220,8 +231,8 @@ namespace EisEngine::components{
 
             child->SetLocalPosition(newGlobalPosition);
 
-            auto newRotation = child->GetLocalRotation() + angleDifference;
-            child->SetLocalRotation(newRotation);
+            //auto newRotation = child->GetLocalRotation() + angleDifference;
+            //child->SetLocalRotation(newRotation);
         }
     }
     void Transform::UpdateChildPositionAfterScaling(const Vector3& oldScale, const Vector3& newScale){
@@ -244,6 +255,22 @@ namespace EisEngine::components{
 
             child->SetLocalPosition(rescaledPos);
         }
+    }
+
+    glm::mat4 Transform::GetLocalMatrix() {
+        auto model = glm::mat4(1.0f);
+        model = glm::translate(model, (glm::vec3) GetLocalPosition());
+        // roll
+        model = glm::rotate(model, glm::radians(GetLocalRotation().z),
+                            glm::vec3(0.0f, 0.0f, 1.0f));
+        // pitch
+        model = glm::rotate(model, glm::radians(GetLocalRotation().x),
+                            glm::vec3(1.0f, 0.0f, 0.0f));
+        // yaw
+        model = glm::rotate(model, glm::radians(GetLocalRotation().y),
+                            glm::vec3(0.0f, 1.0f, 0.0f));
+        model = glm::scale(model, (glm::vec3) GetLocalScale());
+        return model;
     }
 
     // physics syncing

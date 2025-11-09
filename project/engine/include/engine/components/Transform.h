@@ -55,6 +55,8 @@ namespace EisEngine{
 
             /// \n Returns the transform's model matrix, condensing full transform data in one object.
             [[nodiscard]] glm::mat4 GetModelMatrix(){ return modelMatrix;}
+            /// \n Returns a transform's local model matrix, condensing local transform data into one object.
+            glm::mat4 GetLocalMatrix();
 
             /// \n Sets transform position in world space.
             void SetGlobalPosition(const Vector3& pos);

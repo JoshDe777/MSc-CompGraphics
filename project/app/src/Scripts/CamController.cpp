@@ -32,8 +32,8 @@ namespace Maze {
         }
 
         if(Input::GetKeyDown(KeyCode::F)){
-            camera->transform->SetGlobalPosition(focusTransform->GetLocalPosition() + Vector3(0, 0, 5));
-            camera->transform->SetLocalRotation(Vector3(0, 0, 0));
+            camera->transform->SetGlobalPosition(focusTransform->GetLocalPosition() + Vector3(1, 2, 5));
+            camera->transform->SetLocalRotation(Vector3(-15, -15, 0));
         }
         else if(Input::GetLeftMouseButtonDown()){
             auto mousePos = Input::MousePos();
