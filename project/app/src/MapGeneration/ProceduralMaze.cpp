@@ -1,0 +1,315 @@
+#include "ProceduralMaze.h"
+
+namespace Maze::Map {
+
+#pragma region helpers
+    bool SufficientlyExplored(std::vector<std::vector<unsigned int>>& grid, const int& width, const float& percent){
+        float sum = 0;
+        for(const auto& dim : grid)
+            for(const auto& val : dim)
+                sum += (float) val;
+
+        // since val = {0, 1} => width * width = max/full exploration.
+        return sum >= percent * (float) width * (float) width;
+    }
+
+    std::vector<Vector2> GetUnexploredTiles(std::vector<std::vector<unsigned int>>& grid){
+        std::vector<Vector2> res = {};
+        int len = grid.size();
+
+        for(auto i = 0; i < len; i++)
+            for(auto j = 0; j < len; j++)
+                if (grid[i][j] == 0)
+                    res.emplace_back(i, j);
+
+        return res;
+    }
+
+    const std::array<Vector2, 4> cardinalDirections
+        {Vector2(0, 1), Vector2(1, 0), Vector2(0, -1), Vector2(-1, 0)};
+
+    int to_arrIndex (const Vector2& dir) {
+        if(dir == Vector2::up - Vector2::right)
+            return 0;
+        if(dir == Vector2::up)
+            return 1;
+        if(dir == Vector2::up + Vector2::right)
+            return 2;
+        if(dir == -Vector2::right)
+            return 3;
+        if(dir == Vector2::zero)
+            return 4;
+        if(dir == Vector2::right)
+            return 5;
+        if(dir == -Vector2::up - Vector2::right)
+            return 6;
+        if(dir == -Vector2::up)
+            return 7;
+        if(dir == -Vector2::up + Vector2::right)
+            return 8;
+
+        return -1;
+    }
+
+    Vector2 IndexToVec2(const unsigned int& i){
+        switch(i){
+            case 0:
+                return Vector2::up - Vector2::right;
+            case 1:
+                return Vector2::up;
+            case 2:
+                return Vector2::up + Vector2::right;
+            case 3:
+                return -Vector2::right;
+            case 4:
+                return Vector2::zero;
+            case 5:
+                return Vector2::right;
+            case 6:
+                return -Vector2::up - Vector2::right;
+            case 7:
+                return -Vector2::up;
+            default:
+                return -Vector2::up + Vector2::right;
+        }
+    }
+
+    Vector2 arrayToGlobalPos(const Vector2& pos, const Vector2& offset){
+        return offset + 3*pos;
+    }
+
+    Vector2 globalToArrayPos(const Vector2& pos, const Vector2& offset){
+        return (pos - offset) / 3;
+    }
+
+    bool InMap(std::vector<std::unique_ptr<Tile>>& map, const Vector2& tile){
+        return std::any_of(map.begin(), map.end(), [&](std::unique_ptr<Tile>& t) {return t->pos == tile;});
+    }
+
+    bool IsValid(const Vector2& pos, std::vector<std::vector<unsigned int>>& grid, std::vector<Vector2>& path){
+        // return true if pos in grid && not in path
+        auto inGrid = pos.x >= 0 && pos.y >= 0 && pos.x < grid.size() - 1 && pos.y < grid[0].size() - 1;
+        auto notInPath = !std::any_of(path.begin(), path.end(),
+                                    [&](Vector2& tile){return tile == pos;});
+        return inGrid && notInPath;
+    }
+#pragma endregion
+
+    void ProceduralMaze::PlaceTile(const Tile& tile){
+        // 0 = wall; 1 = path/walkable.
+        std::array<unsigned int, 9> walls{
+                0, 0, 0,
+                0, 1, 0,
+                0, 0, 0
+        };
+        for(auto dir : cardinalDirections){
+            int neighbourExists = tile.IsNeighbour(tile.pos + 3*dir);
+            try{
+                walls[to_arrIndex(dir)] = neighbourExists;
+            }
+            catch(std::exception& e){
+                DEBUG_ERROR("Invalid array index: " + std::string(e.what()));
+            }
+        }
+        /*/ TL corner
+        walls[0] = walls[1] * walls[3];
+        // TR corner
+        walls[2] = walls[1] * walls[5];
+        // BL corner
+        walls[6] = walls[7] * walls[3];
+        // BR corner
+        walls[8] = walls[7] * walls[5];*/
+
+        // build meshes here:
+        std::string name = "Path " + (std::string) tile.pos;
+        auto tilePath = game.entityManager.createEntity(name);
+        // make vec3 with z = pos.y
+        tilePath.transform->SetLocalPosition(Vector3(tile.pos.x, 0, tile.pos.y));
+
+        std::vector<Vector3> pathVertices = {};
+        std::vector<unsigned int> pathIndices = {};
+        std::vector<Vector2> uvs = {};
+
+        for(auto i = 0; i < walls.size(); i++){
+            if(walls[i] > 0){
+                auto offset = IndexToVec2(i);
+                int nVertices = (int) pathVertices.size();
+                for(auto v : PrimitiveMesh2D::Square.GetVertices()){
+                    auto v2D = v + offset;
+                    pathVertices.emplace_back(v2D.x, 0, v2D.y);
+                }
+
+                for(auto& v: PrimitiveMesh2D::Square.indices)
+                    pathIndices.emplace_back(v + nVertices);
+
+                uvs.emplace_back(0, 1);
+                uvs.emplace_back(0, 0);
+                uvs.emplace_back(1, 0);
+                uvs.emplace_back(1, 1);
+            }
+        }
+
+        std::vector<Vector3> normals((int)pathVertices.size(), Vector3::up);
+
+        tilePath.AddComponent<Mesh3D>(PrimitiveMesh3D (
+                pathVertices, pathIndices, &normals, &uvs)
+        );
+
+        // texturing here
+
+        auto texture = ResourceManager::GetTexture("path");
+        if(!texture)
+            texture = ResourceManager::GenerateTextureFromFile("textures/gravelly_sand_diff_4k.jpg", "path");
+        auto renderer = &tilePath.AddComponent<Renderer>(texture);
+    }
+
+    ProceduralMaze::ProceduralMaze(Game &game) : game(game) {
+        env = &game.entityManager.createEntity("Maze");
+
+        path = &game.entityManager.createEntity("Maze Path");
+        path->transform->SetParent(env->transform);
+
+        walls = &game.entityManager.createEntity("Maze Walls");
+        walls->transform->SetParent(env->transform);
+
+        Generate();
+    }
+
+    void ProceduralMaze::Generate(const Vector2& centre, const int& width) {
+        // init: generate grid as std::array<std::array<unsigned int, width>, width> with all values = 0;
+        // 0 = unvisited, 1 = visited.
+        std::vector<std::vector<unsigned int>> grid(width, std::vector<unsigned int>(width, 0));
+        // compute all four exit coords (all permutations of 0, +- width/2 => even number = same index each time.)
+        auto half = (int) (width / 2);
+        std::array exit_ids{
+            Vector2(0.0f, (float) half),
+            Vector2((float) half, 0),
+            Vector2((float)width-1, (float) half),
+            Vector2((float) half, (float) width-1)};
+
+        // gen loop
+        // do tile linking @ end of walks to keep path progression instead of grid-based path estimation
+        // coords = global centre + grid index - grid centre
+        // do random walk from start
+        RandomWalk(Vector2((float) half, (float) half), grid, map, centre);
+        // random walks from all exits
+        for(const auto& v: exit_ids)
+            RandomWalk(v, grid, map, centre);
+        // random walks from random, unvisited cells until >= 95% visits (sum array >= 0.95f * width**2)
+        while(!SufficientlyExplored(grid, width, 0.95f)){
+            // get unvisited cells & select random
+            auto unvisitedCells = GetUnexploredTiles(grid);
+            auto cellIndex = RandomInt(0, (int) unvisitedCells.size() - 1);
+            RandomWalk(unvisitedCells[cellIndex], grid, map, centre);
+        }
+
+        // population
+        // create walls & floors from tilemap x grid => unexplored = walls
+        // delete tiles with no neighbours.
+        map.erase(
+                std::remove_if(map.begin(), map.end(),[](const std::unique_ptr<Tile>& tile){
+                    return tile->neighbours.empty();
+                }),
+                map.end()
+            );
+
+        for(auto& tile : map){
+            PlaceTile(*tile);
+            // add textures (biome mapping here if implemented)
+        }
+
+
+
+        // populate torches
+    }
+
+    void ProceduralMaze::RandomWalk(const Vector2 &start, std::vector<std::vector<unsigned int>> &grid,
+                                    std::vector<std::unique_ptr<Tile>> &map, const Vector2& globalCentre) {
+        std::vector<Vector2> currentPath = {};
+        grid [(int) start.x][(int) start.y] = 1;
+        Vector2 offset = globalCentre - 3 * Vector2((float) (int) grid.size() / 2, (float) (int) grid.size() / 2);
+
+        currentPath.push_back(start);
+
+        Vector2 current = start;
+
+        // end random walk if joining the maze.
+        while(true){
+            if(InMap(map, current))
+                break;
+
+            // establish a net of valid neighbours (cardinal direction && position not in path && in grid)
+            std::vector<Vector2> neighbours = {};
+            for(auto dir : cardinalDirections){
+                auto n = current + dir;
+                if (IsValid(n, grid, currentPath))
+                    neighbours.push_back(n);
+            }
+            // exit if no neighbours
+            if(neighbours.empty())
+                break;
+
+            // choose random neighbour
+            auto nextPos = neighbours[RandomInt(0, (int)neighbours.size() - 1)];
+            // create Tile object & link to current
+            currentPath.push_back(nextPos);
+            // set current = neighbour
+            current = nextPos;
+        }
+
+        // add all tiles in path to map & connect
+        Tile* last = nullptr;
+        for(auto i = 0; i < (int) currentPath.size(); i++){
+            // get tile position in global space
+            grid[(int) currentPath[i].x][(int) currentPath[i].y] = 1;
+            auto globalPos = arrayToGlobalPos(currentPath[i], offset);
+            // search for existing tile (nullptr if none)
+            auto tile = GetTileAt(globalPos);
+            // create new one if none
+            if(!tile){
+                map.push_back(std::make_unique<Tile>(globalPos));
+                tile = map.back().get();
+            }
+
+            // if first tile in path, continue to next (dead end)
+            if(last){
+                // connect this tile with the previous tile for the pathing.
+                tile->AddNeighbour(last);
+                last->AddNeighbour(tile);
+            }
+
+            last = tile;
+        }
+    }
+
+    Tile *ProceduralMaze::GetTileAt(const Vector2 &pos) const {
+        for(auto& t : map)
+            if(pos == t->pos)
+                return t.get();
+        return nullptr;
+    }
+
+    Tile *ProceduralMaze::FindClosestTile(const Vector2 &pos) const {
+        if(map.empty())
+            return nullptr;
+
+        const Tile* closest = nullptr;
+        float closestDist = 100000000.0f;
+
+        std::for_each(map.begin(), map.end(), [&](auto& t){
+            auto tile = *t.get();
+            if(!closest){
+                closest = &tile;
+                closestDist = Vector2::Distance(tile.pos, pos);
+                return;
+            }
+
+            if(Vector2::Distance(tile.pos, pos) < closestDist){
+                closest = &tile;
+                closestDist = Vector2::Distance(tile.pos, pos);
+            }
+        });
+
+        return const_cast<Tile*>(closest);
+    }
+}

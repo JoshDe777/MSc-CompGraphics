@@ -72,6 +72,7 @@ namespace EisEngine {
 
         operator std::string() const;
 
+        Vector2 operator-() const;
         Vector2 operator+(Vector2 const &v) const;
         Vector2 operator-(Vector2 const &v) const;
         Vector2 operator*(float const &c) const;

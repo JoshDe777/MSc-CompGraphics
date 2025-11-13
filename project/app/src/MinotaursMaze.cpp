@@ -7,11 +7,14 @@ MinotaursMaze::MinotaursMaze() : Game("Minotaur's Maze") {
     //steve = new Steve(*this);
     camera.transform->SetLocalPosition(car->entity->transform->GetLocalPosition() + Vector3(0, 0, 5));
 
+    maze = new ProceduralMaze(*this);
+
     controller = new CamController(*this, car->entity);
 
     onBeforeShutdown.addListener([&](Game& game){
        delete car;
-       delete steve;
+       //delete steve;
        delete controller;
+       delete maze;
     });
 }
