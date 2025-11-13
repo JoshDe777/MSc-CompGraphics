@@ -97,7 +97,7 @@ namespace Maze::Map {
 
     void ProceduralMaze::PlaceTile(const Tile& tile){
         // 0 = wall; 1 = path/walkable.
-        std::array<unsigned int, 9> walls{
+        std::array<unsigned int, 9> localWalls{
                 0, 0, 0,
                 0, 1, 0,
                 0, 0, 0
@@ -105,7 +105,7 @@ namespace Maze::Map {
         for(auto dir : cardinalDirections){
             int neighbourExists = tile.IsNeighbour(tile.pos + 3*dir);
             try{
-                walls[to_arrIndex(dir)] = neighbourExists;
+                localWalls[to_arrIndex(dir)] = neighbourExists;
             }
             catch(std::exception& e){
                 DEBUG_ERROR("Invalid array index: " + std::string(e.what()));
@@ -123,16 +123,27 @@ namespace Maze::Map {
         // build meshes here:
         std::string name = "Path " + (std::string) tile.pos;
         auto tilePath = game.entityManager.createEntity(name);
+        tilePath.transform->SetParent(path->transform);
         // make vec3 with z = pos.y
         tilePath.transform->SetLocalPosition(Vector3(tile.pos.x, 0, tile.pos.y));
 
+        std::string wallName = "Wall " + (std::string) tile.pos;
+        auto tileWall = game.entityManager.createEntity(wallName);
+        tileWall.transform->SetParent(walls->transform);
+        tileWall.transform->SetLocalPosition(Vector3(tile.pos.x, 0, tile.pos.y));
+
         std::vector<Vector3> pathVertices = {};
         std::vector<unsigned int> pathIndices = {};
-        std::vector<Vector2> uvs = {};
+        std::vector<Vector2> pathUVs = {};
 
-        for(auto i = 0; i < walls.size(); i++){
-            if(walls[i] > 0){
-                auto offset = IndexToVec2(i);
+        std::vector<Vector3> wallVertices = {};
+        std::vector<unsigned int> wallIndices = {};
+        std::vector<Vector3> wallNormals = {};
+        std::vector<Vector2> wallUVs = {};
+
+        for(auto i = 0; i < localWalls.size(); i++){
+            auto offset = IndexToVec2(i);
+            if(localWalls[i] > 0){
                 int nVertices = (int) pathVertices.size();
                 for(auto v : PrimitiveMesh2D::Square.GetVertices()){
                     auto v2D = v + offset;
@@ -142,26 +153,49 @@ namespace Maze::Map {
                 for(auto& v: PrimitiveMesh2D::Square.indices)
                     pathIndices.emplace_back(v + nVertices);
 
-                uvs.emplace_back(0, 1);
-                uvs.emplace_back(0, 0);
-                uvs.emplace_back(1, 0);
-                uvs.emplace_back(1, 1);
+                pathUVs.emplace_back(0, 1);
+                pathUVs.emplace_back(0, 0);
+                pathUVs.emplace_back(1, 0);
+                pathUVs.emplace_back(1, 1);
+            }
+            else{
+                int nVertices = (int) wallVertices.size();
+                for(auto v: PrimitiveMesh3D::cube.GetVertices())
+                    wallVertices.emplace_back(v.x + offset.x, v.y, v.z + offset.y);
+
+                for(auto& ind : PrimitiveMesh3D::cube.indices)
+                    wallIndices.emplace_back(ind + nVertices);
+
+                for(auto& n : PrimitiveMesh3D::cube.GetNormals())
+                    wallNormals.push_back(n);
+
+                for (auto& uv : PrimitiveMesh3D::cube.GetUVs())
+                    wallUVs.push_back(uv);
             }
         }
 
-        std::vector<Vector3> normals((int)pathVertices.size(), Vector3::up);
+        std::vector<Vector3> pathNormals((int)pathVertices.size(), Vector3::up);
 
         tilePath.AddComponent<Mesh3D>(PrimitiveMesh3D (
-                pathVertices, pathIndices, &normals, &uvs)
+                pathVertices, pathIndices, &pathNormals, &pathUVs)
         );
 
         // texturing here
 
-        auto texture = ResourceManager::GetTexture("path");
-        if(!texture)
-            texture = ResourceManager::GenerateTextureFromFile("textures/gravelly_sand_diff_4k.jpg", "path");
-        auto renderer = &tilePath.AddComponent<Renderer>(texture);
-        renderer->material->SetTiling(4.0f);
+        auto pathTexture = ResourceManager::GetTexture("path");
+        if(!pathTexture)
+            pathTexture = ResourceManager::GenerateTextureFromFile("textures/gravelly_sand_diff_4k.jpg", "path");
+        auto pathRenderer = &tilePath.AddComponent<Renderer>(pathTexture);
+        pathRenderer->material->SetTiling(4.0f);
+
+        tileWall.AddComponent<Mesh3D>(PrimitiveMesh3D(
+                wallVertices, wallIndices, &wallNormals, &wallUVs)
+        );
+
+        auto wallTexture = ResourceManager::GetTexture("walls");
+        if(!wallTexture)
+            wallTexture = ResourceManager::GenerateTextureFromFile("textures/wood_inlaid_stone_wall_diff_4k.jpg", "walls");
+        auto wallRenderer = &tileWall.AddComponent<Renderer>(wallTexture);
     }
 
     ProceduralMaze::ProceduralMaze(Game &game) : game(game) {
