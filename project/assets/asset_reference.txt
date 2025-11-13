@@ -1,0 +1,3 @@
+- 'Gravelly Sand' texture from [PolyHaven](https://polyhaven.com/a/gravelly_sand) - Dario Barresi
+- 'Wood Inlaid Stone Wall' texture from [PolyHaven](https://polyhaven.com/a/wood_inlaid_stone_wall) - Amal Kumar
+- 'Gravel Concrete 03' texture from [PolyHaven](https://polyhaven.com/a/gravel_concrete_03) - Charlotte Baglioni

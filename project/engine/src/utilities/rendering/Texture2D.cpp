@@ -2,7 +2,7 @@
 
 namespace EisEngine {
     Texture2D::Texture2D() :
-    Width(0), Height(0), internalFormat(GL_RGB), imageFormat(GL_RGB), wrapS(GL_CLAMP_TO_EDGE), wrapT(GL_CLAMP_TO_EDGE),
+    Width(0), Height(0), internalFormat(GL_RGB), imageFormat(GL_RGB), wrapS(GL_REPEAT), wrapT(GL_REPEAT),
     minFilterMode(GL_LINEAR), maxFilterMode(GL_LINEAR)
     { glGenTextures(1, &textureID);}
 

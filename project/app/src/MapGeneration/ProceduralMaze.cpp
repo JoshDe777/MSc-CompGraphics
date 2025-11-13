@@ -161,6 +161,7 @@ namespace Maze::Map {
         if(!texture)
             texture = ResourceManager::GenerateTextureFromFile("textures/gravelly_sand_diff_4k.jpg", "path");
         auto renderer = &tilePath.AddComponent<Renderer>(texture);
+        renderer->material->SetTiling(8.0f);
     }
 
     ProceduralMaze::ProceduralMaze(Game &game) : game(game) {

@@ -12,7 +12,8 @@ namespace EisEngine {
                        opacity(opacity), metallic(metallic), roughness(roughness) {}
 
     void Material::ApplyMatData(Shader &shader) {
-        shader.setVector("diffuse", Color(diffuse, opacity));
+        shader.setVector("diffuse", Color((diffuse * (1.0f/255)), opacity));
+        shader.setFloat("tiling", tiling);
     }
 
     void Material::Print() {

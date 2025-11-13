@@ -32,7 +32,7 @@ namespace EisEngine::components {
         if(!texture)
             return;
 
-        Shader::ApplyTexture(*texture);
+        shader.ApplyTexture(*texture);
     }
 
     void Renderer::Invalidate() {

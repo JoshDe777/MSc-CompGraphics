@@ -20,7 +20,7 @@ namespace EisEngine::rendering {
         /// \n Applies the shader to the rendering pipeline.
         void Apply(const glm::mat4& newVPMatrix);
         /// \n Applies a texture to the rendering pipeline.
-        static void ApplyTexture(const Texture2D& texture);
+        void ApplyTexture(const Texture2D& texture) const;
 
         /// \n Sets a given uniform matrix in the shader program to the specified value.
         /// @param uniformName - a string representing the name of the matrix whose values are to be set.
@@ -31,6 +31,16 @@ namespace EisEngine::rendering {
         /// @param uniformName - a string representing the name of the vector whose values are to be set.
         /// @param vector - a 4D-vector representing the new desired value.
         void setVector(const std::string &uniformName, glm::vec4 vector) const;
+
+        /// \n Sets a given uniform integer in the shader program to the specified value.
+        /// @param uniformName - a string representing the name of the integer whose values are to be set.
+        /// @param val - an int to take on the value of the given parameter.
+        void setInt(const std::string& uniformName, const int& val) const;
+
+        /// \n Sets a given uniform float in the shader program to the specified value.
+        /// @param uniformName - a string representing the name of the float whose values are to be set.
+        /// @param val - a float to take on the value of the given parameter.
+        void setFloat(const std::string& uniformName, const float& val) const;
 
         /// \n Multiplies the provided view-projection with the model matrix to give object position in camera space.
         /// @param modelMatrix: a 4x4 matrix representing object coordinates in world space.

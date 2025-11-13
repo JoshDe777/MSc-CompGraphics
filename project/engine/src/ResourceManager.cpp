@@ -274,6 +274,8 @@ namespace EisEngine {
     }
 
     Texture2D ResourceManager::loadTextureFromFile(const fs::path& filePath) {
+        stbi_set_flip_vertically_on_load(1);
+
         std::string pathString = filePath.string();
         const char* filename = pathString.c_str();
         Texture2D texture;

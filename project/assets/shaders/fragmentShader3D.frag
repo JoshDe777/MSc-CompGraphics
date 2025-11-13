@@ -4,9 +4,10 @@ in vec2 TexCoords;
 
 uniform vec4 diffuse;
 uniform sampler2D image;
+uniform float tiling;
 
 out vec4 fragColor;
 
 void main() {
-    fragColor = diffuse * texture(image, TexCoords);
+    fragColor = diffuse * texture(image, TexCoords * tiling);
 }

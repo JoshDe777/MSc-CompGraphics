@@ -30,12 +30,12 @@ namespace EisEngine::rendering {
         glUseProgram(shaderProgram);
         vpMatrix = newVPMatrix;
         setMatrix("mvp", vpMatrix);
-        setVector("color", (glm::vec4) Color::white);
     }
 
-    void Shader::ApplyTexture(const Texture2D& texture) {
+    void Shader::ApplyTexture(const Texture2D& texture) const {
         glActiveTexture(GL_TEXTURE0);
         texture.Bind();
+        setInt("image", 0);
     }
 
     void Shader::setMatrix(const std::string &uniformName, glm::mat4 matrix) const {
@@ -45,6 +45,16 @@ namespace EisEngine::rendering {
     void Shader::setVector(const std::string &uniformName, glm::vec4 vector) const {
         auto uniformLocation = glGetUniformLocation(shaderProgram, uniformName.c_str());
         glUniform4fv(uniformLocation, 1, glm::value_ptr(vector));
+    }
+
+    void Shader::setInt(const std::string &uniformName, const int &val) const {
+        auto uniformLocation = glGetUniformLocation(shaderProgram, uniformName.c_str());
+        glUniform1i(uniformLocation, val);
+    }
+
+    void Shader::setFloat(const std::string &uniformName, const float &val) const {
+        auto uniformLocation = glGetUniformLocation(shaderProgram, uniformName.c_str());
+        glUniform1f(uniformLocation, val);
     }
 
     const fs::path Shader::defaultVertexShaderPath = "shaders/vertexShader.vert";

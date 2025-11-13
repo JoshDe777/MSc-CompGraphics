@@ -83,9 +83,9 @@ namespace EisEngine::components {
         // add normals - not yet used for now.
         /*auto norm = glGetAttribLocation(shaderProgram, "normal");
         glVertexAttribPointer(norm, 3, GL_FLOAT, GL_TRUE,
-                              sizeof(glm::vec3), (GLvoid*)offset);
+                              sizeof(glm::vec3), (GLvoid*)offset);*/
         const auto& normals = Vec3VectorToGlm(primitive.GetNormals());
-        offset += normals.size() * sizeof(glm::vec3);*/
+        offset += normals.size() * sizeof(glm::vec3);
 
         // add uvs
         auto uv = glGetAttribLocation(shaderProgram, "texCoords");

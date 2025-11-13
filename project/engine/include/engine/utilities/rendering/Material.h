@@ -44,6 +44,7 @@ namespace EisEngine {
         const float& GetOpacity() const {return opacity;}
         const float& GetMetallic() const {return metallic;}
         const float& GetRoughness() const {return roughness;}
+        const float& GetTiling() const {return tiling;}
         const std::string& Name() {return name;}
         #pragma endregion
 
@@ -54,6 +55,7 @@ namespace EisEngine {
         void SetOpacity(const float& val) {opacity = val;}
         void SetMetallic(const float& val) {metallic = val;}
         void SetRoughness(const float& val) {roughness = val;}
+        void SetTiling(const float& val){tiling = val;}
         #pragma endregion
     private:
         Vector3 diffuse;
@@ -61,6 +63,8 @@ namespace EisEngine {
         float opacity;
         float metallic;
         float roughness;
+        /// \n tesselation factor for the texture:
+        float tiling = 1.0f;
         std::string name;
     };
 }
