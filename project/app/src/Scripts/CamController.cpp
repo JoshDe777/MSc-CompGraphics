@@ -13,22 +13,32 @@ namespace Maze {
     void CamController::Update(EisEngine::Game &_) {
         auto moveModifier = Time::deltaTime * movementSpeed;
         if(Input::GetKeyDown(KeyCode::W)) {
-            camera->transform->Translate(camera->transform->Forward() * -moveModifier);
+            auto moveVector = -camera->transform->Forward();
+            moveVector.y = 0;
+            camera->transform->Translate(moveVector * moveModifier);
         }
         if(Input::GetKeyDown(KeyCode::A)) {
-            camera->transform->Translate(camera->transform->Right() * -moveModifier);
+            auto moveVector = -camera->transform->Right();
+            moveVector.y = 0;
+            camera->transform->Translate(moveVector * moveModifier);
         }
         if(Input::GetKeyDown(KeyCode::S)) {
-            camera->transform->Translate(camera->transform->Forward() * moveModifier);
+            auto moveVector = camera->transform->Forward();
+            moveVector.y = 0;
+            camera->transform->Translate(moveVector * moveModifier);
         }
         if(Input::GetKeyDown(KeyCode::D)) {
-            camera->transform->Translate(camera->transform->Right() * moveModifier);
+            auto moveVector = camera->transform->Right();
+            moveVector.y = 0;
+            camera->transform->Translate(moveVector * moveModifier);
         }
         if(Input::GetKeyDown(KeyCode::Space)) {
-            camera->transform->Translate(Vector3::up * flyModifier * moveModifier);
+            auto moveVector = Vector3::up;
+            camera->transform->Translate(moveVector * flyModifier * moveModifier);
         }
         if(Input::GetKeyDown(KeyCode::LeftControl)) {
-            camera->transform->Translate(Vector3::up * -flyModifier * moveModifier);
+            auto moveVector = -Vector3::up;
+            camera->transform->Translate(moveVector * flyModifier * moveModifier);
         }
 
         if(Input::GetKeyDown(KeyCode::F)){
