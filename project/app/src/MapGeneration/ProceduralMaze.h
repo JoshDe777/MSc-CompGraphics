@@ -12,6 +12,7 @@ namespace Maze::Map {
         explicit ProceduralMaze(Game& game);
         Tile* FindClosestTile(const Vector2& pos) const;
         Tile* GetTileAt(const Vector2& pos) const;
+        Entity* env = nullptr;
     private:
         void Generate(const Vector2& centre = Vector2::zero, const int& width = 32);
         void RandomWalk(const Vector2& start,
@@ -21,7 +22,6 @@ namespace Maze::Map {
                         );
         void PlaceTile(const Tile& tile);
         Game& game;
-        Entity* env = nullptr;
         Entity* path = nullptr;
         Entity* walls = nullptr;
         std::vector<std::unique_ptr<Tile>> map = {};

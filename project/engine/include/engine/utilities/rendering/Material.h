@@ -3,6 +3,8 @@
 #include "engine/utilities/Vector3.h"
 #include "engine/utilities/Color.h"
 
+#include <algorithm>
+
 namespace EisEngine {
     namespace rendering{
         class Shader;
@@ -14,7 +16,7 @@ namespace EisEngine {
     public:
         /// \n Creates a new Material object from the given data.
         /// @param diffuse - Vector3: The base, lit color/tint for the object.\n
-        ///     Defaults to white (255,255,255).
+        ///     Defaults to white (1,1,1).
         /// @param emission - Vector3: The color of light emitted by the object in all directions.\n
         ///     Defaults to black (0,0,0) - no light emitted.
         /// @param opacity - float: The object's opacity = inverse transparency.\n
@@ -25,7 +27,7 @@ namespace EisEngine {
         ///     Defaults to 0.5 (semi-matte)
         explicit Material(
                 std::string  name,
-                const Vector3& diffuse = Vector3(255, 255, 255),
+                const Vector3& diffuse = Vector3(1, 1, 1),
                 const Vector3& emission = Vector3::zero,
                 const float& opacity = 1,
                 const float& metallic = 0,
@@ -49,13 +51,21 @@ namespace EisEngine {
         #pragma endregion
 
         #pragma region setters
-        void SetDiffuse(const Vector3& val) {diffuse = val;}
+        void SetDiffuse(const Vector3& val) {
+            auto x = std::clamp(val.x, 0.0f, 1.0f);
+            auto y = std::clamp(val.y, 0.0f, 1.0f);
+            auto z = std::clamp(val.z, 0.0f, 1.0f);
+            diffuse = Vector3(x, y, z);}
         void SetDiffuse(const Color& val) {diffuse = Vector3(val.r, val.g, val.b);}
-        void SetEmission(const Vector3& val) {emission = val;}
-        void SetOpacity(const float& val) {opacity = val;}
-        void SetMetallic(const float& val) {metallic = val;}
-        void SetRoughness(const float& val) {roughness = val;}
-        void SetTiling(const float& val){tiling = val;}
+        void SetEmission(const Vector3& val) {
+            auto x = std::clamp(val.x, 0.0f, 1.0f);
+            auto y = std::clamp(val.y, 0.0f, 1.0f);
+            auto z = std::clamp(val.z, 0.0f, 1.0f);
+            emission = Vector3(x, y, z);}
+        void SetOpacity(const float& val) {opacity = std::clamp(val, 0.0f, 1.0f);}
+        void SetMetallic(const float& val) {metallic = std::clamp(val, 0.0f, 1.0f);}
+        void SetRoughness(const float& val) {roughness = std::clamp(val, 0.0f, 1.0f);}
+        void SetTiling(const float& val){tiling = val/*std::max(val, 0.0f)*/;}
         #pragma endregion
     private:
         Vector3 diffuse;
