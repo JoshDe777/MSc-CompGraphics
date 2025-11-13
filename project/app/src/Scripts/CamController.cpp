@@ -1,6 +1,8 @@
 #include "CamController.h"
 
 namespace Maze {
+    using CameraMode = EisEngine::systems::CameraMode;
+
     CamController::CamController(EisEngine::Game &game, Entity* objectToFocus) :
     game(game) {
         camera = &game.camera;
@@ -43,7 +45,14 @@ namespace Maze {
 
         if(Input::GetKeyDown(KeyCode::F)){
             camera->transform->SetGlobalPosition(focusTransform->GetLocalPosition() + Vector3(1, 2, 5));
-            camera->transform->SetLocalRotation(Vector3(-15, -15, 0));
+            camera->transform->SetLocalRotation(Vector3(-4ffff5, -15, 0));
+            camera->SetCameraMode(CameraMode::PERSPECTIVE);
+        }
+        else if (Input::GetKeyDown(KeyCode::V)){
+            camera->transform->SetGlobalPosition(Vector3(0, 99, 0));
+            camera->transform->SetLocalRotation(Vector3(-90, 0, 0));
+            camera->SetCameraMode(CameraMode::ORTHO);
+            camera->SetZoom(-100);
         }
         else if(Input::GetLeftMouseButtonDown()){
             auto mousePos = Input::MousePos();

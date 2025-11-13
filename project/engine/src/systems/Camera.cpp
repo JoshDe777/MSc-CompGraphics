@@ -9,7 +9,7 @@ namespace EisEngine::systems {
     m_screenHeight((int) screenDimensions.y),
     aspectRatio(screenDimensions.x / screenDimensions.y),
     nearClip(cameraMode == PERSPECTIVE ? 0.1f : -1),
-    farClip(cameraMode == PERSPECTIVE ? 100 : 10)
+    farClip(100)
     {
         entity = &engine.entityManager.createEntity("Camera");
         transform = entity->transform;
@@ -29,6 +29,12 @@ namespace EisEngine::systems {
             // if changes update aspect ratio and m_zoom factor.
             UpdateAspectRatio();
         });
+    }
+
+    void Camera::SetCameraMode(const EisEngine::systems::CameraMode &newMode) {
+        mode = newMode;
+
+        nearClip = mode == PERSPECTIVE ? 0.1f : -1;
     }
 
     glm::mat4 Camera::GetVPMatrix() {

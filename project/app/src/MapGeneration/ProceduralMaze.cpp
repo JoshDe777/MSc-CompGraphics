@@ -130,7 +130,8 @@ namespace Maze::Map {
         std::string wallName = "Wall " + (std::string) tile.pos;
         auto tileWall = game.entityManager.createEntity(wallName);
         tileWall.transform->SetParent(walls->transform);
-        tileWall.transform->SetLocalPosition(Vector3(tile.pos.x, 0, tile.pos.y));
+        tileWall.transform->SetLocalScale(Vector3(1, wallSize, 1));
+        tileWall.transform->SetLocalPosition(Vector3(tile.pos.x, wallSize/2, tile.pos.y));
 
         std::vector<Vector3> pathVertices = {};
         std::vector<unsigned int> pathIndices = {};
@@ -194,7 +195,7 @@ namespace Maze::Map {
 
         auto wallTexture = ResourceManager::GetTexture("walls");
         if(!wallTexture)
-            wallTexture = ResourceManager::GenerateTextureFromFile("textures/wood_inlaid_stone_wall_diff_4k.jpg", "walls");
+            wallTexture = ResourceManager::GenerateTextureFromFile("textures/gravel_concrete_03_diff_4k.jpg", "walls");
         auto wallRenderer = &tileWall.AddComponent<Renderer>(wallTexture);
     }
 

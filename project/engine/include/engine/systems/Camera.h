@@ -54,7 +54,7 @@ namespace EisEngine::systems {
         /// \n Sets a new FOV value for the active camera.
         void SetFOV(const float& val) {fov = val;}
         /// \n Switches camera mode to the requested style.
-        void SetCameraMode(const CameraMode& newMode) {mode = newMode;}
+        void SetCameraMode(const CameraMode& newMode);
     private:
         /// \n A pointer to the entity assigned to this object.
         Entity *entity;

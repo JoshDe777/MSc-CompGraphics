@@ -25,5 +25,7 @@ namespace Maze::Map {
         Entity* path = nullptr;
         Entity* walls = nullptr;
         std::vector<std::unique_ptr<Tile>> map = {};
+
+        float wallSize = 3.0f;
     };
 }
