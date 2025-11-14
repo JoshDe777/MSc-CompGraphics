@@ -46,7 +46,7 @@ namespace EisEngine::components{
                          Vector3 scale):
             Component(engine, owner),
             localPosition(position),
-            localRotation(rotation),
+            localRotation(glm::quat(Math::DegreesToRadians(rotation))),
             localScale(scale),
             modelMatrix(glm::identity<glm::mat4>()) { SetParent(parentTransform);}
 
@@ -83,24 +83,10 @@ namespace EisEngine::components{
             return m_parent->GetGlobalPosition() + localPosition;
         return localPosition;
     }
-    Vector3 Transform::GetGlobalRotation() const{
+    Quaternion Transform::GetGlobalRotation() const{
         if (m_parent) {
             auto p_rotation = m_parent->GetGlobalRotation();
-            glm::mat4 parentGlobalRotationMatrix = glm::eulerAngleYXZ(
-                    glm::radians(p_rotation.y),
-                    glm::radians(p_rotation.x),
-                    glm::radians(p_rotation.z)
-            );
-            glm::mat4 localRotationMatrix = glm::eulerAngleYXZ(
-                    glm::radians(localRotation.y),
-                    glm::radians(localRotation.x),
-                    glm::radians(localRotation.z)
-            );
-            glm::mat4 globalRotationMatrix = localRotationMatrix * parentGlobalRotationMatrix;
-
-            // make matrix rotation-only to remove noisy translation data.
-            globalRotationMatrix[3] = glm::vec4(0, 0, 0, 1);
-            return ConvertMatrixToEuler(globalRotationMatrix);
+            return p_rotation * localRotation;
         } else
             return localRotation;
     }
@@ -128,23 +114,12 @@ namespace EisEngine::components{
     }
 
     void Transform::SetGlobalRotation(const Vector3& newRotation) {
+        auto intendedRotation = Quaternion(glm::quat(Math::DegreesToRadians(newRotation)));
         Vector3 angularDiff;
         if (m_parent) {
-            glm::mat4 parentGlobalRotationMatrix = glm::eulerAngleYXZ(
-                    glm::radians(m_parent->GetGlobalRotation().y),
-                    glm::radians(m_parent->GetGlobalRotation().x),
-                    glm::radians(m_parent->GetGlobalRotation().z)
-            );
-            glm::mat4 inverseParentRotationMatrix = glm::inverse(parentGlobalRotationMatrix);
-            glm::mat4 globalRotationMatrix = glm::eulerAngleYXZ(
-                    glm::radians(newRotation.y),
-                    glm::radians(newRotation.x),
-                    glm::radians(newRotation.z)
-            );
-            glm::mat4 localRotationMatrix = inverseParentRotationMatrix * globalRotationMatrix;
-            auto newEulerRotation = NormalizeAngles(ConvertMatrixToEuler(localRotationMatrix));
-            angularDiff = CalculateAngularRotation(localRotation, newEulerRotation);
-            localRotation = newRotation;
+            auto p_rotation = m_parent->GetGlobalRotation();
+
+            localRotation = newEulerRotation;
         } else {
             angularDiff = CalculateAngularRotation(localRotation, NormalizeAngles(newRotation));
             localRotation = NormalizeAngles(newRotation);
@@ -172,9 +147,16 @@ namespace EisEngine::components{
         m_positionChanged = true;
     }
     void Transform::SetLocalRotation(const Vector3& rotation) {
-        auto newRotation = NormalizeAngles(rotation);
+        auto newRotation = Quaternion(glm::quat(Math::DegreesToRadians(NormalizeAngles(rotation))));
         auto angularDiff = CalculateAngularRotation(localRotation, newRotation);
         localRotation = newRotation;
+        m_rotationChanged = true;
+        UpdateChildPositionAfterRotation(angularDiff);
+    }
+
+    void Transform::SetLocalRotation(const EisEngine::Quaternion &rotation) {
+        auto angularDiff = CalculateAngularRotation(localRotation, rotation);
+        localRotation = rotation;
         m_rotationChanged = true;
         UpdateChildPositionAfterRotation(angularDiff);
     }
@@ -188,7 +170,9 @@ namespace EisEngine::components{
     // transformations
     void Transform::Translate(const Vector3 &direction) { SetLocalPosition(localPosition + direction);}
     void Transform::Rotate(const Vector3 &vector) {
-        SetLocalRotation(NormalizeAngles(localRotation + vector));
+        auto delta = Quaternion(glm::quat(Math::DegreesToRadians(vector)));
+        glm::quat result = glm::normalize((glm::quat) (delta * localRotation));
+        SetLocalRotation(Quaternion(result));
     }
     void Transform::Rescale(const Vector3 &scalingFactors) {
         SetLocalScale(Vector3
@@ -208,20 +192,14 @@ namespace EisEngine::components{
     void Transform::RemoveChild(Transform *transform) { children.erase(transform);}
 
     // child transformations
-    void Transform::UpdateChildPositionAfterRotation(const Vector3& angleDifference) {
+    void Transform::UpdateChildPositionAfterRotation(const Quaternion& angleDifference) {
         if(children.empty())
             return;
 
-        //glm::mat4 parentMatrix = GetLocalMatrix();
-
-        glm::mat4 rotationMatrix = glm::eulerAngleXYZ(
-                glm::radians(angleDifference.x),
-                glm::radians(angleDifference.y),
-                glm::radians(angleDifference.z));
-
         for (auto& child : children) {
             auto childLocalPosition = child->GetLocalPosition();
-            glm::vec4 newGlobalPositionVec4 = rotationMatrix * glm::vec4((glm::vec3) childLocalPosition, 1.0f);
+            auto p = Quaternion(childLocalPosition.x, childLocalPosition.y, childLocalPosition.z, 0);
+            auto newGlobalPositionVec4 = angleDifference * p * Quaternion(glm::inverse((glm::quat) angleDifference));
 
             auto newGlobalPosition = Vector3(
                     newGlobalPositionVec4.x,
@@ -230,9 +208,6 @@ namespace EisEngine::components{
                     );
 
             child->SetLocalPosition(newGlobalPosition);
-
-            //auto newRotation = child->GetLocalRotation() + angleDifference;
-            //child->SetLocalRotation(newRotation);
         }
     }
     void Transform::UpdateChildPositionAfterScaling(const Vector3& oldScale, const Vector3& newScale){

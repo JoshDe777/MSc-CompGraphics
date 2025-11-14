@@ -2,6 +2,8 @@
 
 #include <string>
 #include <assimp/quaternion.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace EisEngine {
     class Vector3;
@@ -15,10 +17,12 @@ namespace EisEngine {
         /// @param y: The y value of this quaternion
         /// @param z: The z value of this quaternion
         /// @param r: The r value of this quaternion
-        explicit Quaternion(float x = 0, float y = 0, float z = 0, float r = 0): x(x), y(y), z(z), r(r) {}
+        explicit Quaternion(float x = 0, float y = 0, float z = 0, float w = 0): x(x), y(y), z(z), w(w) {}
         /// \n Creates a new Quaternion from an aiQuaternion object.
         /// @param q - aiQuaternion: the quaternion data used to create this quaternion.
-        explicit Quaternion(const aiQuaternion& q) : x(q.x), y(q.y), z(q.z), r(q.w) {}
+        explicit Quaternion(const aiQuaternion& q) : x(q.x), y(q.y), z(q.z), w(q.w) {}
+
+        explicit Quaternion(const glm::quat &q) : x(q.x), y(q.y), z(q.z), w(q.w) {};
 
         /// \n The x value of this quaternion
         float x;
@@ -26,11 +30,12 @@ namespace EisEngine {
         float y;
         /// \n The z value of this quaternion
         float z;
-        /// \n The r value of this quaternion
-        float r;
+        /// \n The w value of this quaternion
+        float w;
 
         operator Vector3() const;
         operator Vector2() const;
+        operator glm::quat() const;
         operator std::string() const;
 
         Quaternion operator+(Quaternion const &q) const;
@@ -55,6 +60,6 @@ namespace EisEngine {
         Quaternion normalized() { return (*this * (1/this->magnitude()));}
 
         /// The conjugated value of this quaternion.
-        Quaternion conjugated() { return Quaternion(r, -x, -y, -z);}
+        Quaternion conjugated() { return Quaternion(-x, -y, -z, w);}
     };
 }

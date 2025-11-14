@@ -12,7 +12,6 @@ namespace EisEngine::systems{
         if(!game.componentManager.hasComponentOfType<Transform>())
             return;
         game.componentManager.forEachComponent<Transform>([&] (Transform &transform){
-            glm::mat4 oldMatrix = transform.modelMatrix;
             transform.modelMatrix = calculateModelMatrix(transform);
         });
     }
@@ -22,15 +21,7 @@ namespace EisEngine::systems{
             return glm::mat4(1.0f);
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, (glm::vec3) transform.GetGlobalPosition());
-        // roll
-        model = glm::rotate(model, glm::radians(transform.GetGlobalRotation().z),
-                            glm::vec3(0.0f, 0.0f, 1.0f));
-        // pitch
-        model = glm::rotate(model, glm::radians(transform.GetGlobalRotation().x),
-                            glm::vec3(1.0f, 0.0f, 0.0f));
-        // yaw
-        model = glm::rotate(model, glm::radians(transform.GetGlobalRotation().y),
-                            glm::vec3(0.0f, 1.0f, 0.0f));
+        model *= glm::mat4_cast((glm::quat) transform.GetGlobalRotation());
         model = glm::scale(model, (glm::vec3) transform.GetGlobalScale());
         return model;
     }

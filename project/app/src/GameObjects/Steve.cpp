@@ -7,6 +7,7 @@ namespace Maze {
         torso->AddComponent<Renderer>().material
             ->SetDiffuse(Color((float)98/255, (float)147/255, (float)227/255, 1));
         torso->transform->SetGlobalScale(Vector3(1, 2, 0.75));
+        torso->transform->SetGlobalPosition(Vector3(0, 2, 0));
 
         neck = &game.entityManager.createEntity("NeckJoint");
         neck->transform->SetParent(torso->transform);
@@ -66,6 +67,7 @@ namespace Maze {
         legR->transform->SetGlobalScale(Vector3(0.4f,2,0.4f));
         legR->transform->SetLocalPosition(Vector3(0,-1, 0));
 
+
         game.onUpdate.addListener([&] (Game& game){
            Animate();
         });
@@ -74,7 +76,7 @@ namespace Maze {
     void Steve::Animate() {
         // rotate
 
-        //torso->transform->Rotate(Vector3(0, 1, 0));
+        torso->transform->Rotate(Vector3(0, 5, 0) * Time::deltaTime);
 
         // walk animation:
         animTime += Time::deltaTime;
@@ -83,14 +85,11 @@ namespace Maze {
         auto rotation = Vector3(stepAngle, 0, 0);
 
         shoulderL->transform->SetLocalRotation(rotation);
-        //debugging
-        auto p_rotation = shoulderL->transform->parent()->GetGlobalRotation();
-
         hipR->transform->SetLocalRotation(rotation);
         shoulderR->transform->SetLocalRotation(-rotation);
         hipL->transform->SetLocalRotation(-rotation);
 
         // move forward
-        torso->transform->Translate(-torso->transform->Forward() * moveSpeed * Time::deltaTime);
+        //torso->transform->Translate(-torso->transform->Forward() * moveSpeed * Time::deltaTime);
     }
 }

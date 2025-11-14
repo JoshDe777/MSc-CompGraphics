@@ -1,9 +1,10 @@
 #pragma once
 
-#include <set>
-#include <glm/glm.hpp>
 #include "engine/ecs/Component.h"
 #include "engine/Utilities.h"
+
+#include <set>
+#include <glm/glm.hpp>
 
 using EisEngine::ecs::Component;
 using EisEngine::ecs::ComponentManager;
@@ -43,7 +44,7 @@ namespace EisEngine{
             /// \n Returns the object's position relative to the world origin.
             [[nodiscard]]Vector3 GetGlobalPosition();
             /// \n Returns the object's rotation relative to the world origin.
-            [[nodiscard]]Vector3 GetGlobalRotation() const;
+            [[nodiscard]]Quaternion GetGlobalRotation() const;
             /// \n  Returns the object's scale relative to the world origin.
             [[nodiscard]] Vector3 GetGlobalScale();
             /// \n Returns the object's position relative to its parent object.
@@ -68,6 +69,7 @@ namespace EisEngine{
             void SetLocalPosition(const Vector3& pos);
             /// \n Sets transform rotation relative to its parent object.
             void SetLocalRotation(const Vector3& rotation);
+            void SetLocalRotation(const Quaternion& rotation);
             /// \n Sets transform scale relative to its parent object.
             void SetLocalScale(const Vector3& scale);
 
@@ -104,7 +106,7 @@ namespace EisEngine{
             /// \n Represents transform position relative to its parent entity.
             Vector3 localPosition;
             /// \n Represents transform rotation relative to its parent entity.
-            Vector3 localRotation;
+            Quaternion localRotation;
             /// \n Represents transform scale relative to its parent entity.
             Vector3 localScale;
             /// \n Represents the transform data in global space as a 4x4 matrix.
@@ -128,7 +130,7 @@ namespace EisEngine{
             /// \n Syncs global scale to the collider's.
             void SyncScale(const Vector3& oldScale, const Vector3& newScale);
             /// \n Rotates all child transforms around the local axis after rotation.
-            void UpdateChildPositionAfterRotation(const Vector3& angleDifference);
+            void UpdateChildPositionAfterRotation(const Quaternion& angleDifference);
             /// \n Recalculates the distance to all child transforms after rescaling.
             void UpdateChildPositionAfterScaling(const Vector3& oldScale, const Vector3& newScale);
         };

@@ -46,7 +46,6 @@ namespace EisEngine{
     }
 
     Vector3::operator Vector2() const { return Vector2(x, y);}
-    Vector3::operator Quaternion() const { return Quaternion(x, y, z);}
     Vector3::operator glm::vec3() const { return {x, y, z};}
     Vector3::operator glm::vec2() const { return {x, y};}
     Vector3::operator b2Vec2() const { return {x, y};}

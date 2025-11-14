@@ -1,3 +1,4 @@
+#include "engine/utilities/Vector3.h"
 #include <algorithm>
 #include "engine/utilities/Math.h"
 
@@ -29,7 +30,23 @@ namespace EisEngine {
 
     float Math::DegreesToRadians(const float& angle) { return angle * PI / 180.0f;}
 
+    Vector3 Math::DegreesToRadians(const Vector3& v){
+        return Vector3(
+                DegreesToRadians(v.x),
+                DegreesToRadians(v.y),
+                DegreesToRadians(v.z)
+                );
+    }
+
     float Math::RadiansToDegrees(const float &angle) { return angle * 180 / PI;}
+
+    Vector3 Math::RadiansToDegrees(const EisEngine::Vector3 &v) {
+        return Vector3(
+                RadiansToDegrees(v.x),
+                RadiansToDegrees(v.y),
+                RadiansToDegrees(v.z)
+                );
+    }
 
     float Math::Clamp(const float &floatToClamp, const float &minValue, const float &maxValue)
     { return std::clamp(floatToClamp, minValue, maxValue);}

@@ -8,6 +8,7 @@ namespace EisEngine {
         DEGREES,
         RADIANS
     };
+    class Vector3;
 
     /// \n Provides convenient math and angle operations in one static class.
     class Math {
@@ -50,9 +51,13 @@ namespace EisEngine {
         /// @param angle - float: the angle in degrees.
         static float DegreesToRadians(const float& angle);
 
+        static Vector3 DegreesToRadians(const Vector3& angles);
+
         /// \n Converts an angle from radians to degrees.
         /// @param angle - float: the angle in radians.
         static float RadiansToDegrees(const float& angle);
+
+        static Vector3 RadiansToDegrees(const Vector3& angles);
 
         /// \n Clamps the given float to fit between the provided min and max values.
         /// @param floatToClamp - float: the value to be clamped.

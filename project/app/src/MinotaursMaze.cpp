@@ -6,9 +6,9 @@ MinotaursMaze::MinotaursMaze() : Game("Minotaur's Maze") {
     //car->entity->transform->SetLocalRotation(Vector3(90, 0, 0));
     steve = new Steve(*this);
 
-    maze = new ProceduralMaze(*this);
+    //maze = new ProceduralMaze(*this);
 
-    camera.transform->SetLocalPosition(maze->env->transform->GetLocalPosition() + Vector3(0, 2, 0));
+    camera.transform->SetLocalPosition(steve->torso->transform->GetLocalPosition() + Vector3(3, 2, 0));
 
     controller = new CamController(*this, steve->torso);
 
@@ -16,6 +16,6 @@ MinotaursMaze::MinotaursMaze() : Game("Minotaur's Maze") {
        //delete car;
        delete steve;
        delete controller;
-       delete maze;
+       //delete maze;
     });
 }

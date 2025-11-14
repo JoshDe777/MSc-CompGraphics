@@ -44,8 +44,8 @@ namespace Maze {
         }
 
         if(Input::GetKeyDown(KeyCode::F)){
-            camera->transform->SetGlobalPosition(focusTransform->GetLocalPosition() + Vector3(1, 2, 5));
-            camera->transform->SetLocalRotation(Vector3(-4ffff5, -15, 0));
+            camera->transform->SetGlobalPosition(focusTransform->GetLocalPosition() + Vector3(5, 2, 5));
+            camera->transform->SetLocalRotation(Vector3(-30, 0, 0));
             camera->SetCameraMode(CameraMode::PERSPECTIVE);
         }
         else if (Input::GetKeyDown(KeyCode::V)){

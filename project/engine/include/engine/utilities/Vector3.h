@@ -68,7 +68,6 @@ namespace EisEngine {
         [[nodiscard]] Vector3 Rotate(const Vector3& rotationAngles) const;
 
         operator Vector2() const;
-        operator Quaternion() const;
         operator glm::vec3() const;
         operator glm::vec2() const;
         operator b2Vec2() const;
