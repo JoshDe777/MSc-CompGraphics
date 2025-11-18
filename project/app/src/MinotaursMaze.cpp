@@ -11,6 +11,8 @@ MinotaursMaze::MinotaursMaze() : Game("Minotaur's Maze") {
 
     maze = new ProceduralMaze(*this);
 
+    //cube = new Cube(*this);
+
     camera.transform->SetLocalPosition(Vector3(0, 2, -3));
 
     controller = new CamController(*this, maze->env);
@@ -19,6 +21,7 @@ MinotaursMaze::MinotaursMaze() : Game("Minotaur's Maze") {
        // delete car;
        //delete steve;
        delete controller;
+       //delete cube;
        delete maze;
     });
 }

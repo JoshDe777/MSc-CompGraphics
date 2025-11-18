@@ -195,8 +195,9 @@ namespace Maze::Map {
 
         auto wallTexture = ResourceManager::GetTexture("walls");
         if(!wallTexture)
-            wallTexture = ResourceManager::GenerateTextureFromFile("textures/gravel_concrete_03_diff_4k.jpg", "walls");
+            wallTexture = ResourceManager::GenerateTextureFromFile("textures/wood_inlaid_stone_wall_diff_4k.jpg", "walls");
         auto wallRenderer = &tileWall.AddComponent<Renderer>(wallTexture);
+        wallRenderer->material->SetTiling(4.0f);
     }
 
     ProceduralMaze::ProceduralMaze(Game &game) : game(game) {

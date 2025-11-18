@@ -87,25 +87,25 @@ namespace EisEngine::rendering {
             // left
             Vector3(-0.5f, 0.5f, 0.5f),         //4
             Vector3(-0.5f, -0.5f, 0.5f),        //5
-            Vector3(-0.5f, -0.5f, 0.5f),        //6
+            Vector3(-0.5f, -0.5f, -0.5f),        //6
             Vector3(-0.5f, 0.5f, -0.5f),        //7
             // bottom
             Vector3(-0.5f, -0.5f, 0.5f),        //8
             Vector3(0.5f, -0.5f, 0.5f),         //9
             Vector3(0.5f, -0.5f, -0.5f),        //10
             Vector3(-0.5f, -0.5f, -0.5f),       //11
-            Vector3(0.5f, -0.5f, 0.5f),         //12
             // right
+            Vector3(0.5f, -0.5f, 0.5f),         //12
             Vector3(0.5f, 0.5f, 0.5f),          //13
             Vector3(0.5f, 0.5f, -0.5f),         //14
             Vector3(0.5f, -0.5f, -0.5f),        //15
-            Vector3(-0.5f, -0.5f, -0.5f),       //16
             // back
+            Vector3(-0.5f, -0.5f, -0.5f),       //16
             Vector3(0.5f, -0.5f, -0.5f),        //17
             Vector3(0.5f, 0.5f, -0.5f),         //18
             Vector3(-0.5f, 0.5f, -0.5f),        //19
-            Vector3(-0.5f, 0.5f, -0.5f),        //20
             // top
+            Vector3(-0.5f, 0.5f, -0.5f),        //20
             Vector3(0.5f, 0.5f, -0.5f),         //21
             Vector3(0.5f, 0.5f, 0.5f),          //22
             Vector3(-0.5f, 0.5f, 0.5f),         //23
