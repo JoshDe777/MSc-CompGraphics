@@ -1,10 +1,11 @@
 #include "CamController.h"
 
 namespace Maze {
+    float moveSpeed = 0.25f;
+
     using CameraMode = EisEngine::systems::CameraMode;
 
-    CamController::CamController(EisEngine::Game &game, Entity* objectToFocus) :
-    game(game) {
+    CamController::CamController(EisEngine::Game &game, Entity* objectToFocus){
         camera = &game.camera;
         focusTransform = objectToFocus->transform;
         game.onUpdate.addListener([&](Game& game){
@@ -12,10 +13,10 @@ namespace Maze {
         });
     }
 
-    void CamController::Update(EisEngine::Game &_) {
+    void CamController::Update(EisEngine::Game &game) {
         auto moveModifier = Time::deltaTime * movementSpeed;
         if(Input::GetKeyDown(KeyCode::W)) {
-            auto moveVector = -camera->transform->Forward();
+            auto moveVector = camera->transform->Forward();
             moveVector.y = 0;
             camera->transform->Translate(moveVector * moveModifier);
         }
@@ -25,7 +26,7 @@ namespace Maze {
             camera->transform->Translate(moveVector * moveModifier);
         }
         if(Input::GetKeyDown(KeyCode::S)) {
-            auto moveVector = camera->transform->Forward();
+            auto moveVector = -camera->transform->Forward();
             moveVector.y = 0;
             camera->transform->Translate(moveVector * moveModifier);
         }
@@ -44,9 +45,16 @@ namespace Maze {
         }
 
         if(Input::GetKeyDown(KeyCode::F)){
-            camera->transform->SetGlobalPosition(focusTransform->GetLocalPosition() + Vector3(1, 2, 5));
-            camera->transform->SetLocalRotation(Vector3(-4ffff5, -15, 0));
+            camera->transform->SetGlobalPosition(focusTransform->GetLocalPosition() + Vector3(1, 3, 5));
+            camera->transform->SetLocalRotation(Vector3(-45, -15, 0));
             camera->SetCameraMode(CameraMode::PERSPECTIVE);
+            onFocusHold.invoke(*this);
+        }
+        else if(Input::GetKeyDown(KeyCode::G)){
+            camera->transform->SetGlobalPosition(focusTransform->GetLocalPosition() + Vector3(5, 3, 3));
+            camera->transform->SetLocalRotation(Vector3(-45, 30, 0));
+            camera->SetCameraMode(CameraMode::PERSPECTIVE);
+            onFocusHold.invoke(*this);
         }
         else if (Input::GetKeyDown(KeyCode::V)){
             camera->transform->SetGlobalPosition(Vector3(0, 99, 0));

@@ -65,16 +65,10 @@ namespace Maze {
         legR->AddComponent<Renderer>().material->SetDiffuse(Color::blue);
         legR->transform->SetGlobalScale(Vector3(0.4f,2,0.4f));
         legR->transform->SetLocalPosition(Vector3(0,-1, 0));
-
-        game.onUpdate.addListener([&] (Game& game){
-           Animate();
-        });
     }
 
     void Steve::Animate() {
         // rotate
-
-        //torso->transform->Rotate(Vector3(0, 1, 0));
 
         // walk animation:
         animTime += Time::deltaTime;

@@ -7,8 +7,8 @@ namespace Maze {
     public:
         explicit Steve(Game& game);
         Entity* torso = nullptr;
-    private:
         void Animate();
+    private:
         Entity* neck = nullptr;
         Entity* shoulderL = nullptr;
         Entity* shoulderR = nullptr;
@@ -17,7 +17,7 @@ namespace Maze {
 
         float animSpeed = 5;
         float stride = 25.0f;
-        float moveSpeed = 0.25f;
+        float moveSpeed = 0.06525f;
 
         float animTime = 0;
     };
