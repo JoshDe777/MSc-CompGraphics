@@ -79,8 +79,14 @@ namespace EisEngine::components{
 
     // getters
     Vector3 Transform::GetGlobalPosition() {
-        if(m_parent)
-            return m_parent->GetGlobalPosition() + localPosition;
+        if(m_parent){
+            // I know this is bad practise but the system assumes scale invariant positions.
+            auto p_scale = m_parent->GetGlobalScale();
+            auto scaleInvariantParentMatrix = glm::scale(m_parent->modelMatrix, glm::vec3(1/p_scale.x, 1/p_scale.y, 1/p_scale.z));
+            // position by matrix instead of just adding parent pos for rotation variance.
+            glm::vec4 worldPos = scaleInvariantParentMatrix * glm::vec4((glm::vec3) localPosition, 1.0f);
+            return Vector3(worldPos.x, worldPos.y, worldPos.z);
+        }
         return localPosition;
     }
     Vector3 Transform::GetGlobalRotation() const{
@@ -96,10 +102,8 @@ namespace EisEngine::components{
                     glm::radians(localRotation.x),
                     glm::radians(localRotation.z)
             );
-            glm::mat4 globalRotationMatrix = localRotationMatrix * parentGlobalRotationMatrix;
+            glm::mat4 globalRotationMatrix = parentGlobalRotationMatrix * localRotationMatrix;
 
-            // make matrix rotation-only to remove noisy translation data.
-            globalRotationMatrix[3] = glm::vec4(0, 0, 0, 1);
             return ConvertMatrixToEuler(globalRotationMatrix);
         } else
             return localRotation;
@@ -209,7 +213,7 @@ namespace EisEngine::components{
 
     // child transformations
     void Transform::UpdateChildPositionAfterRotation(const Vector3& angleDifference) {
-        if(children.empty())
+        /*if(children.empty())
             return;
 
         //glm::mat4 parentMatrix = GetLocalMatrix();
@@ -233,7 +237,7 @@ namespace EisEngine::components{
 
             //auto newRotation = child->GetLocalRotation() + angleDifference;
             //child->SetLocalRotation(newRotation);
-        }
+        }*/
     }
     void Transform::UpdateChildPositionAfterScaling(const Vector3& oldScale, const Vector3& newScale){
         if(children.empty())

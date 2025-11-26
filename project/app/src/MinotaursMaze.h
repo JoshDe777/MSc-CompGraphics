@@ -2,7 +2,6 @@
 
 #include <EisEngine.h>
 
-#include "GameObjects/Car.h"
 #include "GameObjects/Steve.h"
 #include "Scripts/CamController.h"
 #include "MapGeneration/ProceduralMaze.h"
@@ -16,7 +15,6 @@ public:
     explicit MinotaursMaze();
 private:
     Cube* cube = nullptr;
-    Car* car = nullptr;
     Steve* steve = nullptr;
     CamController* controller = nullptr;
     ProceduralMaze* maze = nullptr;

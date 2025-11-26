@@ -3,6 +3,8 @@
 #include "engine/systems/SceneGraphUpdater.h"
 #include "engine/Game.h"
 
+#include <glm/gtx/euler_angles.hpp>
+
 namespace EisEngine::systems{
 
     SceneGraphUpdater::SceneGraphUpdater(Game &game) : System(game)
@@ -22,15 +24,12 @@ namespace EisEngine::systems{
             return glm::mat4(1.0f);
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, (glm::vec3) transform.GetGlobalPosition());
-        // roll
-        model = glm::rotate(model, glm::radians(transform.GetGlobalRotation().z),
-                            glm::vec3(0.0f, 0.0f, 1.0f));
-        // pitch
-        model = glm::rotate(model, glm::radians(transform.GetGlobalRotation().x),
-                            glm::vec3(1.0f, 0.0f, 0.0f));
-        // yaw
-        model = glm::rotate(model, glm::radians(transform.GetGlobalRotation().y),
-                            glm::vec3(0.0f, 1.0f, 0.0f));
+        auto rotationVec3 = transform.GetGlobalRotation();
+        model *= glm::eulerAngleYXZ(
+                glm::radians(rotationVec3.y),
+                glm::radians(rotationVec3.x),
+                glm::radians(rotationVec3.z)
+            );
         model = glm::scale(model, (glm::vec3) transform.GetGlobalScale());
         return model;
     }
