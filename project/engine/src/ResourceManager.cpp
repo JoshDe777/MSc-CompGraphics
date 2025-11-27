@@ -160,7 +160,7 @@ namespace EisEngine {
             // -emission color AI_MATKEY_COLOR_EMISSIVE
             aiColor4D emissive;
             aiGetMaterialColor(mat, AI_MATKEY_COLOR_EMISSIVE, &emissive);
-            result->SetDiffuse(Vector3(emissive.r, emissive.g, emissive.b));
+            result->SetEmission(Vector3(emissive.r, emissive.g, emissive.b));
 
             // -opacity AI_MATKEY_OPACITY
             float opacity;
