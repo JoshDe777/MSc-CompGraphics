@@ -6,9 +6,10 @@ namespace Maze {
     class Steve {
     public:
         explicit Steve(Game& game);
-        Entity* torso = nullptr;
         void Animate();
+        shared_ptr<Entity> entity = nullptr;
     private:
+        Entity* torso = nullptr;
         Entity* neck = nullptr;
         Entity* shoulderL = nullptr;
         Entity* shoulderR = nullptr;

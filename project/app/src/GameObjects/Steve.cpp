@@ -2,15 +2,19 @@
 
 namespace Maze {
     Steve::Steve(Game &game) {
-        torso = &game.entityManager.createEntity("Steve");
+        auto ovrScale = Vector3(0.1f, 0.1f, 0.1f);
+        entity = make_shared<Entity>(game.entityManager.createEntity("Steve"));
+
+        torso = &game.entityManager.createEntity("Torso");
+        torso->transform->SetParent(entity->transform);
         torso->AddComponent<Mesh3D>(PrimitiveMesh3D::cube);
         torso->AddComponent<Renderer>().material
             ->SetDiffuse(Color((float)98/255, (float)147/255, (float)227/255, 1));
-        torso->transform->SetGlobalScale(Vector3(1, 2, 0.75));
+        torso->transform->SetGlobalScale(Vector3(1, 2, 0.75f));
 
         neck = &game.entityManager.createEntity("NeckJoint");
         neck->transform->SetParent(torso->transform);
-        neck->transform->SetLocalPosition(Vector3(0, 1, 0));
+        neck->transform->SetLocalPosition(Vector3(0, (float)5/16, 0));
 
         auto head = &game.entityManager.createEntity("Head");
         head->transform->SetParent(neck->transform);
@@ -46,7 +50,7 @@ namespace Maze {
 
         hipL = &game.entityManager.createEntity("HipLJoint");
         hipL->transform->SetParent(torso->transform);
-        hipL->transform->SetLocalPosition(Vector3(-0.25f, -1, 0));
+        hipL->transform->SetLocalPosition(Vector3(-0.25f, 0, 0));
 
         auto legL = &game.entityManager.createEntity("LeftLeg");
         legL->transform->SetParent(hipL->transform);
@@ -57,7 +61,7 @@ namespace Maze {
 
         hipR = &game.entityManager.createEntity("HipRJoint");
         hipR->transform->SetParent(torso->transform);
-        hipR->transform->SetLocalPosition(Vector3(0.25f, -1, 0));
+        hipR->transform->SetLocalPosition(Vector3(0.25f, 0, 0));
 
         auto legR = &game.entityManager.createEntity("RightLeg");
         legR->transform->SetParent(hipR->transform);
@@ -65,6 +69,8 @@ namespace Maze {
         legR->AddComponent<Renderer>().material->SetDiffuse(Color::blue);
         legR->transform->SetGlobalScale(Vector3(0.4f,2,0.4f));
         legR->transform->SetLocalPosition(Vector3(0,-1, 0));
+
+        entity->transform->SetLocalScale(ovrScale);
 
         game.onUpdate.addListener([&](Game& game){
             Animate();
@@ -83,14 +89,8 @@ namespace Maze {
         auto rotation = Vector3(stepAngle, 0, 0);
 
         shoulderL->transform->SetLocalRotation(rotation);
-        //debugging
-        auto p_rotation = shoulderL->transform->parent()->GetGlobalRotation();
-
         hipR->transform->SetLocalRotation(rotation);
         shoulderR->transform->SetLocalRotation(-rotation);
         hipL->transform->SetLocalRotation(-rotation);
-
-        // move forward
-        // torso->transform->Translate(-torso->transform->Forward() * moveSpeed * Time::deltaTime);
     }
 }

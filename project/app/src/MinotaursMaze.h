@@ -4,6 +4,7 @@
 
 #include "GameObjects/Steve.h"
 #include "GameObjects/Minotaur.h"
+#include "GameObjects/Torch.h"
 #include "Scripts/CamController.h"
 #include "MapGeneration/ProceduralMaze.h"
 
@@ -14,8 +15,9 @@ class MinotaursMaze : public Game {
 public:
     explicit MinotaursMaze();
 private:
-    shared_ptr<Steve> steve;
-    shared_ptr<CamController> controller;
+    shared_ptr<Steve> steve = nullptr;
+    shared_ptr<CamController> controller = nullptr;
     shared_ptr<ProceduralMaze> maze = nullptr;
     shared_ptr<Minotaur> minotaur;
+    shared_ptr<Torch> torch = nullptr;
 };
