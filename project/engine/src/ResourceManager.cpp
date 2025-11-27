@@ -149,37 +149,35 @@ namespace EisEngine {
     Material* ResourceManager::LoadMaterial(const aiMaterial* mat){
         auto matName = std::string(mat->GetName().C_Str());
         if(Materials[matName] == nullptr){
-            auto result = *new Material(matName);
+            Materials[matName] = make_unique<Material>(matName);
+            auto result = Materials[matName].get();
             // get properties:
             // -diffuse color AI_MATKEY_COLOR_DIFFUSE
-            aiVector3D diffuse;
-            mat->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
-            result.SetDiffuse(Vector3(diffuse));
+            aiColor4D diffuse;
+            aiGetMaterialColor(mat, AI_MATKEY_COLOR_DIFFUSE, &diffuse);
+            result->SetDiffuse(Vector3(diffuse.r, diffuse.g, diffuse.b));
 
             // -emission color AI_MATKEY_COLOR_EMISSIVE
-            aiVector3D emissive;
-            mat->Get(AI_MATKEY_COLOR_EMISSIVE, emissive);
-            result.SetEmission(Vector3(emissive));
+            aiColor4D emissive;
+            aiGetMaterialColor(mat, AI_MATKEY_COLOR_EMISSIVE, &emissive);
+            result->SetDiffuse(Vector3(emissive.r, emissive.g, emissive.b));
 
             // -opacity AI_MATKEY_OPACITY
             float opacity;
             mat->Get(AI_MATKEY_OPACITY, opacity);
-            result.SetOpacity(opacity);
+            result->SetOpacity(opacity);
 
             // -roughness: no matkey - non-phong attributes obtained with $raw or $mat keys.
             auto roughness = 0.5f;
             if(mat->Get("$raw.Roughness", 0, 0, roughness) != AI_SUCCESS)
                 mat->Get("$mat.roughnessFactor", 0, 0, roughness);
-            result.SetRoughness(roughness);
+            result->SetRoughness(roughness);
 
             // -metallic: no matkey
             auto metallic = 0.0f;
             if(mat->Get("$raw.Metalness", 0, 0, metallic) != AI_SUCCESS)
                 mat->Get("$mat.metallicFactor", 0, 0, metallic);
-            result.SetMetallic(metallic);
-
-            // save newly created texture.
-            Materials[matName] = make_unique<Material>(result);
+            result->SetMetallic(metallic);
         }
         else
             DEBUG_WARN("Attempting to overwrite existing material " + matName + ".")
