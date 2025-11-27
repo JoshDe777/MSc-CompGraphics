@@ -6,7 +6,7 @@ namespace Maze {
     class CamController {
         using event_t = Event<CamController, CamController&>;
     public:
-        explicit CamController(Game& game, Entity* objectToFocus);
+        explicit CamController(Game& game, const shared_ptr<Entity>& objectToFocus);
         event_t onFocusHold;
     private:
         void Update(Game& game);

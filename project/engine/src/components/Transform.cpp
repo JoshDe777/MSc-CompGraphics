@@ -84,7 +84,7 @@ namespace EisEngine::components{
             auto p_scale = m_parent->GetGlobalScale();
             auto scaleInvariantParentMatrix = glm::scale(m_parent->modelMatrix, glm::vec3(1/p_scale.x, 1/p_scale.y, 1/p_scale.z));
             // position by matrix instead of just adding parent pos for rotation variance.
-            glm::vec4 worldPos = scaleInvariantParentMatrix * glm::vec4((glm::vec3) localPosition, 1.0f);
+            glm::vec4 worldPos = m_parent->modelMatrix * glm::vec4((glm::vec3) localPosition, 1.0f);
             return Vector3(worldPos.x, worldPos.y, worldPos.z);
         }
         return localPosition;

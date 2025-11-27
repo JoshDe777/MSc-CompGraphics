@@ -5,7 +5,7 @@ namespace Maze {
 
     using CameraMode = EisEngine::systems::CameraMode;
 
-    CamController::CamController(EisEngine::Game &game, Entity* objectToFocus){
+    CamController::CamController(EisEngine::Game &game, const shared_ptr<Entity>& objectToFocus){
         camera = &game.camera;
         focusTransform = objectToFocus->transform;
         game.onUpdate.addListener([&](Game& game){

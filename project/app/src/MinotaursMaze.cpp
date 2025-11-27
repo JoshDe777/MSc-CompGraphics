@@ -1,20 +1,14 @@
 #include "MinotaursMaze.h"
 
 MinotaursMaze::MinotaursMaze() : Game("Minotaur's Maze") {
-
-    steve = new Steve(*this);
-    steve->torso->transform->SetLocalPosition(Vector3(50, 0, 50));
+    //steve = make_shared<Steve>(*this);
+    //steve->torso->transform->SetLocalPosition(Vector3(0, 0, 0));
 
     //maze = new ProceduralMaze(*this);
 
+    minotaur = make_shared<Minotaur>(*this);
+
     camera.transform->SetLocalPosition(Vector3(0, 2, -3));
 
-    controller = new CamController(*this, steve->torso);
-
-    onBeforeShutdown.addListener([&](Game& game){
-       delete steve;
-       delete controller;
-       //delete cube;
-       //delete maze;
-    });
+    controller = make_shared<CamController>(*this, minotaur->entity);
 }

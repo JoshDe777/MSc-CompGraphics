@@ -71,8 +71,18 @@ namespace EisEngine {
 
         // Create entity for node & attach to parent if exists.
         auto nodeEntity = game.entityManager.createEntity(node->mName.C_Str());
-        if(parent)
+        if(parent){
             nodeEntity.transform->SetParent(parent->transform);
+        }
+
+        // get transform data & update entity transform
+        aiVector3D scale, pos;
+        aiQuaternion rotation;
+        node->mTransformation.Decompose(scale, rotation, pos);
+        nodeEntity.transform->SetLocalScale(Vector3(scale));
+        Vector3 eulerRotation = Vector3(glm::eulerAngles(glm::quat(rotation.w, rotation.x, rotation.y, rotation.z)));
+        nodeEntity.transform->SetLocalRotation(eulerRotation);
+        nodeEntity.transform->SetLocalPosition(Vector3(pos));
 
         // foreach mesh in node->nMeshes
         for(unsigned int i = 0; i < node->mNumMeshes; i++){
@@ -95,15 +105,6 @@ namespace EisEngine {
             auto assimpMaterial = scene->mMaterials[mesh->mMaterialIndex];
             Material* mat = LoadMaterial(assimpMaterial);
             auto tex = ImportTextureFromAssimp(assimpMaterial, scene, modelPath);
-
-            // get transform data & update entity transform
-            aiVector3D scale, pos;
-            aiQuaternion rotation;
-            node->mTransformation.Decompose(scale, rotation, pos);
-            submesh->transform->SetLocalScale(Vector3(scale));
-            Vector3 eulerRotation = Vector3(glm::eulerAngles(glm::quat(rotation.w, rotation.x, rotation.y, rotation.z)));
-            submesh->transform->SetLocalRotation(eulerRotation);
-            submesh->transform->SetLocalPosition(Vector3(pos));
 
             // add Mesh3D & Renderer components
             submesh->AddComponent<Mesh3D>(primitive);
@@ -180,9 +181,8 @@ namespace EisEngine {
             // save newly created texture.
             Materials[matName] = make_unique<Material>(result);
         }
-        else{
+        else
             DEBUG_WARN("Attempting to overwrite existing material " + matName + ".")
-        }
         return Materials[matName].get();
     }
 

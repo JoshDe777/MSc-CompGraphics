@@ -3,9 +3,9 @@
 #include <EisEngine.h>
 
 #include "GameObjects/Steve.h"
+#include "GameObjects/Minotaur.h"
 #include "Scripts/CamController.h"
 #include "MapGeneration/ProceduralMaze.h"
-#include "GameObjects/Cube.h"
 
 using namespace Maze;
 using namespace Maze::Map;
@@ -14,8 +14,8 @@ class MinotaursMaze : public Game {
 public:
     explicit MinotaursMaze();
 private:
-    Cube* cube = nullptr;
-    Steve* steve = nullptr;
-    CamController* controller = nullptr;
-    ProceduralMaze* maze = nullptr;
+    shared_ptr<Steve> steve;
+    shared_ptr<CamController> controller;
+    shared_ptr<ProceduralMaze> maze = nullptr;
+    shared_ptr<Minotaur> minotaur;
 };
