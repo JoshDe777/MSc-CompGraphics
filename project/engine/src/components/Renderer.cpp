@@ -1,4 +1,5 @@
 #include "engine/components/Renderer.h"
+#include "engine/components/PointLight.h"
 #include "engine/ResourceManager.h"
 
 namespace EisEngine::components {
@@ -15,6 +16,10 @@ namespace EisEngine::components {
             texture = ResourceManager::GetTexture("default");
         if(!mat)
             material = ResourceManager::GetMaterialInstance("default");
+        else if(material->GetEmission() != Vector3::zero){
+            entity()->AddComponent<PointLight>(material.get());
+            DEBUG_INFO("Adding Point Light with properties Emission=" + (std::string) material->GetEmission() + "; Intensity=" + std::to_string(material->GetIntensity()))
+        }
     }
 
     Renderer::Renderer(EisEngine::components::Renderer &&other) noexcept :

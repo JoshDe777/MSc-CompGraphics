@@ -38,7 +38,7 @@ namespace EisEngine {
             Texture2D* GetTexture() { return texture;}
 
             /// \n The material attributed to the associated mesh.
-            std::unique_ptr<Material> material;
+            shared_ptr<Material> material;
         protected:
             /// \n A function called when a component is intentionally deleted.
             void Invalidate() override;

@@ -66,8 +66,7 @@ namespace EisEngine {
         if(node->mNumMeshes == 0 && node->mNumChildren == 0)
             return;
 
-        DEBUG_LOG("Importing node " + std::string(node->mName.C_Str()) + " with " +
-                  std::to_string((node->mNumMeshes)) + " meshes.")
+        DEBUG_INFO("Processing entity " + (std::string) node->mName.C_Str() + ".")
 
         // Create entity for node & attach to parent if exists.
         auto nodeEntity = game.entityManager.createEntity(node->mName.C_Str());
@@ -90,10 +89,6 @@ namespace EisEngine {
             auto index = node->mMeshes[i];
             auto mesh = scene->mMeshes[index];
 
-            // create submesh entity & attach to node entity.
-            auto submesh = &game.entityManager.createEntity(mesh->mName.C_Str());
-            submesh->transform->SetParent(nodeEntity.transform);
-
             // Safety check — skip non-triangular or non-vertex meshes
             if (!mesh->HasPositions() || mesh->mNumVertices == 0)
                 continue;
@@ -107,8 +102,8 @@ namespace EisEngine {
             auto tex = ImportTextureFromAssimp(assimpMaterial, scene, modelPath);
 
             // add Mesh3D & Renderer components
-            submesh->AddComponent<Mesh3D>(primitive);
-            submesh->AddComponent<Renderer>(tex, mat, "");
+            nodeEntity.AddComponent<Mesh3D>(primitive);
+            nodeEntity.AddComponent<Renderer>(tex, mat, "");
         }
 
         // import all child nodes recursively
@@ -151,6 +146,16 @@ namespace EisEngine {
         if(Materials[matName] == nullptr){
             Materials[matName] = make_unique<Material>(matName);
             auto result = Materials[matName].get();
+
+            DEBUG_INFO("[" + matName + " data]")
+            for (unsigned int i = 0; i < mat->mNumProperties; i++) {
+                aiMaterialProperty* p = mat->mProperties[i];
+
+                std::cout << "Key: " << p->mKey.C_Str()
+                          << " | Type: " << p->mType
+                          << " | Size: " << p->mDataLength << "\n";
+            }
+
             // get properties:
             // -diffuse color AI_MATKEY_COLOR_DIFFUSE
             aiColor4D diffuse;
@@ -161,6 +166,10 @@ namespace EisEngine {
             aiColor4D emissive;
             aiGetMaterialColor(mat, AI_MATKEY_COLOR_EMISSIVE, &emissive);
             result->SetEmission(Vector3(emissive.r, emissive.g, emissive.b));
+
+            // assign default emission if missing.
+            if(!emissive.IsBlack())
+                result->SetIntensity(1.0f);
 
             // -opacity AI_MATKEY_OPACITY
             float opacity;

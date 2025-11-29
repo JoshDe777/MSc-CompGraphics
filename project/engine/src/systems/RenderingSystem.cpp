@@ -5,7 +5,6 @@
 // DO NOT UPDATE WITHOUT ALSO UPDATING SAME NAMED MACRO IN FRAGMENT SHADERS!
 #define MAX_LIGHTS 25
 #define INTENSITY_THRESHOLD (1.0f/9.0f)
-#define MIN_DIST 0.1f
 
 namespace EisEngine::systems {
 // helper functions:
@@ -114,8 +113,6 @@ namespace EisEngine::systems {
                     engine.componentManager.forEachComponent<PointLight>([&](PointLight& light){
                         auto dist = Vector3::Distance(light.position(), pos);
                         if(
-                            // to avoid light sources affecting themselves
-                            dist >= MIN_DIST &&
                             light.GetIntensity() / (dist*dist) > INTENSITY_THRESHOLD &&
                             // either closer than the furthest light in list or if less than max lights considered.
                             (dist < furthestLight || lights.size() < MAX_LIGHTS)

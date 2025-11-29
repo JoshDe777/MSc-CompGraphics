@@ -2,6 +2,7 @@
 
 #include "engine/ecs/Component.h"
 #include "engine/utilities/Vector3.h"
+#include "engine/utilities/rendering/Material.h"
 
 namespace EisEngine{
     namespace rendering { class Shader; }
@@ -14,20 +15,18 @@ namespace EisEngine{
         public:
             explicit PointLight (
                     Game& game, guid_t owner,
-                    const Vector3& em = Vector3::one,
-                    const float& I = 1.0f
+                    Material *mat
             );
             void Apply(Shader& shader, const int& index) const;
 
-            Vector3 GetEmission() const { return emission;}
-            float GetIntensity() const {return intensity;}
+            Vector3 GetEmission() const { return mat->GetEmission();}
+            float GetIntensity() const {return mat->GetIntensity();}
             Vector3 position() const;
 
-            void SetEmission(const Vector3& v) { emission = v;}
-            void SetIntensity(const float& I) { intensity = I;}
+            void SetEmission(const Vector3& v) { mat->SetEmission(v);}
+            void SetIntensity(const float& I) { mat->SetIntensity(I);}
         private:
-            Vector3 emission;
-            float intensity;
+            Material* mat;
         };
     }
 }
