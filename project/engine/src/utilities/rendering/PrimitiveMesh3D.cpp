@@ -126,31 +126,35 @@ namespace EisEngine::rendering {
             22, 21, 20
     };
 
+    const Vector3 forward = Vector3(0, 0, 1);
+    const Vector3 right = Vector3(1, 0, 0);
+    const Vector3 up = Vector3(0, 1, 0);
+
     const std::vector<Vector3> cubeNormals = {
-            Vector3::forward,
-            Vector3::forward,
-            Vector3::forward,
-            Vector3::forward,
-            -Vector3::right,
-            -Vector3::right,
-            -Vector3::right,
-            -Vector3::right,
-            -Vector3::up,
-            -Vector3::up,
-            -Vector3::up,
-            -Vector3::up,
-            Vector3::right,
-            Vector3::right,
-            Vector3::right,
-            Vector3::right,
-            -Vector3::forward,
-            -Vector3::forward,
-            -Vector3::forward,
-            -Vector3::forward,
-            Vector3::up,
-            Vector3::up,
-            Vector3::up,
-            Vector3::up
+            forward,
+            forward,
+            forward,
+            forward,
+            -right,
+            -right,
+            -right,
+            -right,
+            -up,
+            -up,
+            -up,
+            -up,
+            right,
+            right,
+            right,
+            right,
+            -forward,
+            -forward,
+            -forward,
+            -forward,
+            up,
+            up,
+            up,
+            up
     };
 
     const std::vector<Vector2> cubeUVs = {
