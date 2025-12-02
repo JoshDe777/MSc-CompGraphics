@@ -29,8 +29,6 @@ namespace EisEngine::systems{
     }
 
     glm::mat4 SceneGraphUpdater::calculateModelMatrix(EisEngine::components::Transform &transform) {
-        DEBUG_INFO("Updating Transforms!")
-
         if(transform.deleted)
             return glm::mat4(1.0f);
 

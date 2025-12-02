@@ -94,7 +94,6 @@ namespace Maze {
         shoulderR->transform->SetLocalRotation(-rotation);
         hipL->transform->SetLocalRotation(-rotation);
 
-        entity->transform->Translate(Vector3::forward);
-        DEBUG_LOG(entity->transform->GetGlobalPosition())
+        entity->transform->Translate(Vector3::forward * moveSpeed * Time::deltaTime);
     }
 }
