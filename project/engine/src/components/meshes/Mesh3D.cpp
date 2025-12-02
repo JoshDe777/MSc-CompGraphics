@@ -73,9 +73,6 @@ namespace EisEngine::components {
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         GLCheckError("Mesh3D::DrawElements::VBO Binding", entity()->name());
 
-        // test index order matching?
-        glDisable(GL_CULL_FACE);
-
         // draw vertices
         auto vpos = glGetAttribLocation(shaderProgram, "aPos");
         glEnableVertexAttribArray(vpos);
@@ -84,7 +81,7 @@ namespace EisEngine::components {
         auto offset = primitive.GetVertexCount() * sizeof(glm::vec3);
         GLCheckError("Mesh3D::DrawElements::vertices", entity()->name());
 
-        // add normals - not yet used for now.
+        // add normals
         auto norm = glGetAttribLocation(shaderProgram, "normal");
         glEnableVertexAttribArray(norm);
         glVertexAttribPointer(norm, 3, GL_FLOAT, GL_FALSE,
@@ -104,7 +101,5 @@ namespace EisEngine::components {
 
         glDrawElements(GL_TRIANGLES, primitive.indexCount, GL_UNSIGNED_INT, nullptr);
         GLCheckError("Mesh3D::DrawElements", entity()->name());
-
-        glEnable(GL_CULL_FACE);
     }
 }

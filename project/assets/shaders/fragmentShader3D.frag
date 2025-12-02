@@ -36,12 +36,12 @@ vec3 calculateFragColor(vec4 base){
         // calculate distance between light src and obj.
         float dist = distance(light.pos, fragPos);
         //
-        result += (light.emission * base.xyz * max(0, dot(fragNormal, lightDir)) * light.I) / dist*dist;
+        result += (light.emission * base.xyz * max(0, dot(fragNormal, lightDir)) * light.I) / (dist);
 
         // specular:
         vec3 view = normalize(camPos - fragPos);
         vec3 vHalf = normalize(lightDir + view);
-        result += (light.emission * base.xyz * pow(max(0, dot(fragNormal, vHalf)), shiny * SPECULAR_FACTOR) * light.I) / dist*dist;
+        result += (light.emission * base.xyz * pow(max(0, dot(fragNormal, vHalf)), shiny * SPECULAR_FACTOR) * light.I) / (dist);
     }
     return result;
 }

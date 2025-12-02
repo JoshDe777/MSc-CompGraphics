@@ -104,6 +104,13 @@ namespace EisEngine {
             // add Mesh3D & Renderer components
             nodeEntity.AddComponent<Mesh3D>(primitive);
             nodeEntity.AddComponent<Renderer>(tex, mat, "");
+            if(mat->GetEmission() != Vector3::zero)
+                nodeEntity.AddComponent<PointLight>(mat);
+
+            auto light = nodeEntity.GetComponent<PointLight>();
+            if(light) {
+                DEBUG_INFO(light->position())
+            }
         }
 
         // import all child nodes recursively

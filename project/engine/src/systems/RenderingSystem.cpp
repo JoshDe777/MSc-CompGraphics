@@ -12,12 +12,26 @@
 namespace EisEngine::systems {
 // helper functions:
 
+struct Entry{
+    PointLight* L;
+    float dist2;
+};
+
     // used to sort entities by ascending z position.
     bool CompareZValues(SpriteMesh* a, SpriteMesh* b)
     { return a->entity()->transform->GetGlobalPosition().z < b->entity()->transform->GetGlobalPosition().z;}
 
 // rendering system methods:
     std::vector<Entity*> RenderingSystem::Loaders = {};
+
+    constexpr float CELL_SIZE = 4.0f;
+
+    inline Vector2 WorldToCell(const glm::vec3& pos) {
+        return Vector2{
+                floor(pos.x / CELL_SIZE),
+                floor(pos.z / CELL_SIZE)
+        };
+    }
 
     void RenderingSystem::MarkAsLoader(EisEngine::ecs::Entity *ptr) {
         Loaders.push_back(ptr);
@@ -50,9 +64,46 @@ namespace EisEngine::systems {
         ResourceManager::GenerateShaderFromFiles("shaders/betterVertexShader.vert",
                                                  "shaders/fragmentShader3D.frag",
                                                  "3D Shader");
+
+        glDisable(GL_CULL_FACE);
+    }
+
+    void RenderingSystem::BuildLightGrid() {
+        LightGrid.clear();
+
+        if(engine.componentManager.hasComponentOfType<PointLight>()){
+            engine.componentManager.forEachComponent<PointLight>([&](PointLight& light){
+                Vector2 cell = WorldToCell(light.position());
+                LightGrid[cell].push_back(light.GetOwner());
+            });
+        }
+    }
+
+    std::vector<int> RenderingSystem::QueryNearbyLights(const glm::vec3& objectPos) {
+        Vector2 c = WorldToCell(objectPos);
+
+        std::vector<int> result;
+        result.reserve(16); // fast
+
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                Vector2 nc{ c.x + dx, c.y + dz };
+
+                auto it = LightGrid.find(nc);
+                if (it != LightGrid.end()) {
+                    const auto& list = it->second;
+                    result.insert(result.end(), list.begin(), list.end());
+                }
+            }
+        }
+
+        return result;
     }
 
     void RenderingSystem::Draw() {
+        if(LightGrid.empty())
+            BuildLightGrid();
+
         // re-enable depth testing for 'regular' entities.
         glEnable(GL_DEPTH_TEST);
         auto i = 0;
@@ -96,6 +147,7 @@ namespace EisEngine::systems {
             activeShader->Apply(camera);
             engine.componentManager.forEachComponent<Mesh3D>([&](Mesh3D& mesh){
                 auto model = mesh.entity()->transform->GetModelMatrix();
+                activeShader->setMatrix("model", model);
                 activeShader->setMatrix("mvp", activeShader->CalculateMVPMatrix(model));auto normalMat = glm::mat3(model);
                 // if mat is inversible, apply inverse transposed matrix
                 if(abs(glm::determinant(normalMat)) >= 1e-6f)
@@ -122,40 +174,36 @@ namespace EisEngine::systems {
                 // compute lighting
                 if(lodDist < DIST_THRESHOLD){
                     activeShader->setInt("LOD", 1);
-                    std::vector<PointLight*> lights = {};
-                    double furthestLight = 10000000000000000000.0;
-                    if(engine.componentManager.hasComponentOfType<PointLight>()){
-                        // get list of MAX_LIGHTS closest light sources to object with
-                        engine.componentManager.forEachComponent<PointLight>([&](PointLight& light){
-                            auto dist = Vector3::Distance(light.position(), pos);
-                            if(lights.size() < MAX_LIGHTS || dist < furthestLight) {
-                                float largestDist = dist;
-                                // insert at right place
-                                if(lights.empty())
-                                    lights.push_back(&light);
-                                else{
-                                    for(int i = (int) lights.size() - 1; i >= 0; i--){
-                                        auto nDist = Vector3::Distance(lights[i]->position(), pos);
-                                        largestDist = std::max(largestDist, nDist);
-                                        if(dist < nDist)
-                                            continue;
 
-                                        // dist >= nDist
-                                        lights.insert(lights.begin() + i + 1, &light);
-                                        // keep max lights count
-                                        if(lights.size() > MAX_LIGHTS)
-                                            lights.pop_back();
-                                        break;
-                                    }
-                                }
-                                furthestLight = (double) largestDist;
-                            }
-                        });
+                    // get lights in grid
+                    auto results = QueryNearbyLights(pos);
+                    std::vector<Entry> list;
+                    list.reserve(results.size());
 
-                        for(auto i = 0; i < lights.size(); i++)
-                            lights[i]->Apply(*activeShader, i);
-                        activeShader->setInt("nLights", (int) lights.size());
+                    // for each entry in the results, create an Entry object
+                    for (int id : results) {
+                        auto* e = engine.entityManager.getEntity(id);
+                        if (!e) continue;
+
+                        auto* L = e->GetComponent<PointLight>();
+                        if (!L) continue;
+
+                        float d2 = Vector3::Distance(L->position(), pos);
+                        list.push_back({L, d2});
                     }
+
+                    // sort entries by distance
+                    std::sort(list.begin(), list.end(),
+                              [](auto& a, auto& b){ return a.dist2 < b.dist2; });
+
+                    // resize list to acceptable size
+                    if (list.size() > MAX_LIGHTS)
+                        list.resize(MAX_LIGHTS);
+
+                    // unwrap
+                    for (int i = 0; i < list.size(); i++)
+                        list[i].L->Apply(*activeShader, i);
+                    activeShader->setInt("nLights", (int) list.size());
                 }
                 else{
                     // else default to ambient.
@@ -221,7 +269,5 @@ namespace EisEngine::systems {
             mesh->draw();
         }
         #pragma endregion
-
-        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
     }
 }

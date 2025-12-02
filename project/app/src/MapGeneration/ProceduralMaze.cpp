@@ -96,7 +96,8 @@ namespace Maze::Map {
 
     // return true only if pattern of 1-1-1 in EITHER x or y direction.
     bool IsCorridor(const std::array<unsigned int, 9>& grid){
-        return (grid[3] == 1 && grid[5] == 1) != (grid[2] == 1 && grid[7] == 1);
+        return (grid[3] == 1 && grid[5] == 1) == (grid[1] == 0 && grid[7] == 0) !=
+                (grid[1] == 1 && grid[7] == 1) == (grid[3] == 0 || grid[5] == 0);
     }
 
     Vector3 GetRight(const Vector3& dir){
@@ -104,6 +105,19 @@ namespace Maze::Map {
             dir == Vector3::right ? -Vector3::forward :
             dir == -Vector3::forward ? -Vector3::right :
             dir == -Vector3::right ? Vector3::forward : Vector3::zero;
+    }
+
+    float GetTorchRotation(const int& i){
+        switch(i){
+            case 1:
+                return 180;
+            case 3:
+                return -90;
+            case 5:
+                return 90;
+            default:
+                return 0;
+        }
     }
 #pragma endregion
 
@@ -215,16 +229,18 @@ namespace Maze::Map {
         // place on right hand side going out
         if (IsCorridor(localWalls)) {
             auto dir = localWalls[3] == 1 ? -Vector3::right : Vector3::forward;
+            float rotation = dir == -Vector3::right ? -90 : 180;
             // place torch @ pos + 0.5 * GetRight(dir) + torchY;
             auto torch = torches.emplace_back(make_unique<Torch>(game)).get();
-            Vector3 pos = tile.pos + GetRight(dir) * 0.5f;
-            pos.y = torchY;
+            Vector3 pos = Vector3(tile.pos.x, torchY, tile.pos.y) + GetRight(dir) * 0.5f;
+            DEBUG_LOG((std::string) pos)
             torch->entity->transform->SetGlobalPosition(pos);
+            torch->entity->transform->Rotate(Vector3(0, rotation, 0));
         }
         else
             // foreach pos where grid = 1:
-            for(auto i : localWalls){
-                if (i == 0)
+            for(auto i = 0; i < 9; i++){
+                if (localWalls[i] == 0)
                     continue;
                 // place torch @ pos + 0.5 * GetRight(pos - centre) + torchY;
                 auto dirVec2 = IndexToVec2(i);
@@ -233,9 +249,10 @@ namespace Maze::Map {
                     continue;
                 auto dir = Vector3(dirVec2.x, 0, dirVec2.y);
                 auto torch = torches.emplace_back(make_unique<Torch>(game)).get();
-                Vector3 pos = tile.pos + GetRight(dir) * 0.5f;
-                pos.y = torchY;
+                Vector3 pos = dir * 1.5f + Vector3(tile.pos.x, torchY, tile.pos.y) + GetRight(dir) * 0.5f;
+                DEBUG_LOG((std::string) pos)
                 torch->entity->transform->SetGlobalPosition(pos);
+                torch->entity->transform->Rotate(Vector3(0, GetTorchRotation(i), 0));
             }
     }
 

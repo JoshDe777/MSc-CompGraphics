@@ -16,9 +16,6 @@ namespace EisEngine::components {
             texture = ResourceManager::GetTexture("default");
         if(!mat)
             material = ResourceManager::GetMaterialInstance("default");
-        else if(material->GetEmission() != Vector3::zero){
-            entity()->AddComponent<PointLight>(material.get());
-        }
     }
 
     Renderer::Renderer(EisEngine::components::Renderer &&other) noexcept :

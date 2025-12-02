@@ -6,6 +6,14 @@
 #include "engine/utilities/rendering/Shader.h"
 
 namespace EisEngine::systems {
+    struct GridCoordHashMap{
+        size_t operator()(const Vector2& c) const {
+            // good 2D hash — no collisions for small/medium worlds
+            return (std::hash<int>()(c.x) * 73856093) ^
+                   (std::hash<int>()(c.y) * 19349663);
+        }
+    };
+
     using namespace rendering;
     /// \n The system drawing objects onto the display.
     class RenderingSystem : public System {
@@ -23,5 +31,8 @@ namespace EisEngine::systems {
         std::array<GLuint, 5> VAO;
         GLuint FBO;
         static std::vector<Entity*> Loaders;
+        std::unordered_map<Vector2, std::vector<int>, GridCoordHashMap> LightGrid = {};
+        void BuildLightGrid();
+        std::vector<int> QueryNearbyLights(const glm::vec3& objectPos);
     };
 }
