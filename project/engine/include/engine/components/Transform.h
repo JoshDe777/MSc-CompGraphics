@@ -130,6 +130,8 @@ namespace EisEngine{
             void SyncRotation(const Vector3& newRotation);
             /// \n Syncs global scale to the collider's.
             void SyncScale(const Vector3& oldScale, const Vector3& newScale);
+
+            void MarkDirty();
         };
     }
 }

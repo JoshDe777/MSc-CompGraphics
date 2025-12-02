@@ -129,7 +129,7 @@ namespace EisEngine::components{
         else
             localPosition = pos;
         m_positionChanged = true;
-        dirty = true;
+        MarkDirty();
     }
 
     void Transform::SetGlobalRotation(const Vector3& newRotation) {
@@ -155,7 +155,7 @@ namespace EisEngine::components{
             localRotation = NormalizeAngles(newRotation);
         }
         m_rotationChanged = true;
-        dirty = true;
+        MarkDirty();
     }
     void Transform::SetGlobalScale(const Vector3& scale) {
         auto oldScale = GetGlobalScale();
@@ -170,25 +170,25 @@ namespace EisEngine::components{
         else
             localScale = scale;
         SyncScale(oldScale, localScale);
-        dirty = true;
+        MarkDirty();
     }
     void Transform::SetLocalPosition(const Vector3& pos) {
         localPosition = pos;
         m_positionChanged = true;
-        dirty = true;
+        MarkDirty();
     }
     void Transform::SetLocalRotation(const Vector3& rotation) {
         auto newRotation = NormalizeAngles(rotation);
         auto angularDiff = CalculateAngularRotation(localRotation, newRotation);
         localRotation = newRotation;
         m_rotationChanged = true;
-        dirty = true;
+        MarkDirty();
     }
     void Transform::SetLocalScale(const Vector3& scale) {
         auto oldScale = GetGlobalScale();
         localScale = scale;
         SyncScale(oldScale, GetGlobalScale());
-        dirty = true;
+        MarkDirty();
     }
 
     // transformations
@@ -243,5 +243,14 @@ namespace EisEngine::components{
         if(!collider)
             return;
         collider->RescaleBounds(oldScale, newScale);
+    }
+
+    void Transform::MarkDirty() {
+        dirty = true;
+        if(children.empty())
+            return;
+
+        for(auto child:children)
+            child->MarkDirty();
     }
 }

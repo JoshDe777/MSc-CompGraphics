@@ -2,7 +2,7 @@
 
 namespace Maze {
     Steve::Steve(Game &game) {
-        auto ovrScale = Vector3(0.1f, 0.1f, 0.1f);
+        auto ovrScale = Vector3(0.25f, 0.25f, 0.25f);
         entity = make_shared<Entity>(game.entityManager.createEntity("Steve"));
 
         torso = &game.entityManager.createEntity("Torso");
@@ -71,6 +71,7 @@ namespace Maze {
         legR->transform->SetLocalPosition(Vector3(0,-1, 0));
 
         entity->transform->SetLocalScale(ovrScale);
+        entity->transform->SetGlobalPosition(Vector3(0, 5, 0));
 
         game.onUpdate.addListener([&](Game& game){
             Animate();
@@ -80,7 +81,7 @@ namespace Maze {
     void Steve::Animate() {
         // rotate
         if(Input::GetKeyDown(KeyCode::R))
-            torso->transform->Rotate(Vector3(0,1,0));
+            entity->transform->Rotate(Vector3(0,1,0));
 
         // walk animation:
         animTime += Time::deltaTime;
@@ -92,5 +93,8 @@ namespace Maze {
         hipR->transform->SetLocalRotation(rotation);
         shoulderR->transform->SetLocalRotation(-rotation);
         hipL->transform->SetLocalRotation(-rotation);
+
+        entity->transform->Translate(Vector3::forward);
+        DEBUG_LOG(entity->transform->GetGlobalPosition())
     }
 }

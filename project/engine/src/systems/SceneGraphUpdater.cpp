@@ -9,13 +9,10 @@ namespace EisEngine::systems{
 
     SceneGraphUpdater::SceneGraphUpdater(Game &game) : System(game)
     {
-        game.onBeforeUpdate.addListener([&] (Game &game){ UpdateTransforms(game);});
+        game.onUpdate.addListener([&] (Game &game){ UpdateTransforms(game);});
         game.onAfterUpdate.addListener([&] (Game &game){
             if(!game.componentManager.hasComponentOfType<Transform>())
                 return;
-            game.componentManager.forEachComponent<Transform>([&] (Transform &transform){
-                transform.dirty = false;
-            });
         });
     }
 
@@ -32,8 +29,11 @@ namespace EisEngine::systems{
     }
 
     glm::mat4 SceneGraphUpdater::calculateModelMatrix(EisEngine::components::Transform &transform) {
+        DEBUG_INFO("Updating Transforms!")
+
         if(transform.deleted)
             return glm::mat4(1.0f);
+
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, (glm::vec3) transform.GetGlobalPosition());
         auto rotationVec3 = transform.GetGlobalRotation();
@@ -43,6 +43,7 @@ namespace EisEngine::systems{
                 glm::radians(rotationVec3.z)
             );
         model = glm::scale(model, (glm::vec3) transform.GetGlobalScale());
+        transform.dirty = false;
         return model;
     }
 }

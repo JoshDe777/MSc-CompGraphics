@@ -1,16 +1,18 @@
 #include "CamController.h"
 
 namespace Maze {
-    float moveSpeed = 0.25f;
-
     using CameraMode = EisEngine::systems::CameraMode;
 
-    CamController::CamController(EisEngine::Game &game, const shared_ptr<Entity>& objectToFocus){
+    CamController::CamController(EisEngine::Game &game, const shared_ptr<Entity>& minotaur, const shared_ptr<Entity>& steve){
         camera = &game.camera;
-        focusTransform = objectToFocus->transform;
+        this->minotaur = minotaur->transform;
+        this->steve = steve->transform;
         game.onUpdate.addListener([&](Game& game){
             Update(game);
         });
+
+        startFwd = camera->transform->Forward();
+        startUp = camera->transform->Up();
     }
 
     void CamController::Update(EisEngine::Game &game) {
@@ -36,33 +38,71 @@ namespace Maze {
             camera->transform->Translate(moveVector * moveModifier);
         }
         if(Input::GetKeyDown(KeyCode::Space)) {
-            auto moveVector = Vector3::up;
-            camera->transform->Translate(moveVector * flyModifier * moveModifier);
+            if(isPerspective){
+                auto moveVector = Vector3::up;
+                camera->transform->Translate(moveVector * flyModifier * moveModifier);
+            }
+            else
+                camera->Zoom(zoomSpeed);
         }
         if(Input::GetKeyDown(KeyCode::LeftControl)) {
-            auto moveVector = -Vector3::up;
-            camera->transform->Translate(moveVector * flyModifier * moveModifier);
+            if(isPerspective){
+                auto moveVector = -Vector3::up;
+                camera->transform->Translate(moveVector * flyModifier * moveModifier);
+            }
+            else
+                camera->Zoom(-zoomSpeed);
         }
 
         if(Input::GetKeyDown(KeyCode::F)){
-            camera->transform->SetGlobalPosition(focusTransform->GetLocalPosition() + Vector3(1, 3, 5));
-            camera->transform->SetLocalRotation(Vector3(-45, -15, 0));
-            camera->SetCameraMode(CameraMode::PERSPECTIVE);
-            onFocusHold.invoke(*this);
+            if(camera->transform->parent() != minotaur){
+                camera->transform->SetParent(minotaur);
+                camera->transform->SetLocalPosition(thirdPersonOffset);
+                camera->transform->SetLocalRotation(Vector3(-45, -15, 0));
+                camera->SetCameraMode(CameraMode::PERSPECTIVE);
+                onFocusHold.invoke(*this);
+            }
+            else{
+                auto pos = camera->transform->GetGlobalPosition();
+                camera->transform->SetParent(nullptr);
+                camera->transform->SetLocalPosition(pos);
+                camera->SetCameraMode(CameraMode::PERSPECTIVE);
+            }
         }
         else if(Input::GetKeyDown(KeyCode::G)){
-            camera->transform->SetGlobalPosition(focusTransform->GetLocalPosition() + Vector3(5, 3, 3));
-            camera->transform->SetLocalRotation(Vector3(-45, 30, 0));
-            camera->SetCameraMode(CameraMode::PERSPECTIVE);
-            onFocusHold.invoke(*this);
+            if(camera->transform->parent() != steve){
+                camera->transform->SetParent(steve);
+                camera->transform->SetLocalPosition(thirdPersonOffset);
+                camera->transform->SetLocalRotation(Vector3(-45, -15, 0));
+                camera->SetCameraMode(CameraMode::PERSPECTIVE);
+                onFocusHold.invoke(*this);
+            }
+            else{
+                auto pos = camera->transform->GetGlobalPosition();
+                camera->transform->SetParent(nullptr);
+                camera->transform->SetLocalPosition(pos);
+                camera->SetCameraMode(CameraMode::PERSPECTIVE);
+            }
         }
         else if (Input::GetKeyDown(KeyCode::V)){
-            camera->transform->SetGlobalPosition(Vector3(0, 99, 0));
-            camera->transform->SetLocalRotation(Vector3(-90, 0, 0));
-            camera->SetCameraMode(CameraMode::ORTHO);
-            camera->SetZoom(-100);
+            if (isPerspective) {
+                camera->transform->SetGlobalPosition(Vector3(0, 99, 0));
+                camera->transform->SetLocalRotation(Vector3(-90, 0, 0));
+                camera->SetCameraMode(CameraMode::ORTHO);
+                camera->SetZoom(-100);
+                isPerspective = false;
+            }
+            else {
+                camera->transform->SetGlobalPosition(Vector3(0, 1, 0));
+                camera->transform->SetLocalRotation(Vector3(0, 0, 0));
+                camera->SetCameraMode(CameraMode::PERSPECTIVE);
+                camera->SetZoom(0);
+                isPerspective = true;
+            }
+
         }
-        else if(Input::GetLeftMouseButtonDown()){
+
+        if(isPerspective){
             auto mousePos = Input::MousePos();
             // offset from centre
             auto size = game.context.GetWindowSize();
@@ -70,13 +110,15 @@ namespace Maze {
             auto centre = Vector2(0.5f, 0.5f);
             auto centreOffset = normalizedMousePos - centre;
 
-            auto result = Vector2(-centreOffset.y * rotationSpeed, -centreOffset.x * rotationSpeed);
-            if(abs(result.x) > maxRotationDeg)
-                result.x = result.x > 0 ? maxRotationDeg : -maxRotationDeg;
-            if(abs(result.y) > maxRotationDeg)
-                result.y = result.y > 0 ? maxRotationDeg : -maxRotationDeg;
+            auto targetX = -centreOffset.x * 90.0f;
+            auto targetY = -centreOffset.y * 90.0f;
 
-            camera->transform->Rotate(result * Time::deltaTime);
+            // yRotation -> rotation around y axis -> yaw; xRotation -> rotation around x axis -> pitch.
+            // Confusing, I know. Sorry.
+            yRotation = yRotation + (targetX - yRotation) * sensitivity.x * Time::deltaTime;
+            xRotation = Math::Clamp(xRotation + (targetY - xRotation) * sensitivity.y * Time::deltaTime, -135, 135);
+
+            camera->transform->SetLocalRotation(Vector3(xRotation, yRotation, 0));
         }
     }
 }
