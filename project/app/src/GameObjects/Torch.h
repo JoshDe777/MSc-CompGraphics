@@ -13,6 +13,7 @@ namespace Maze {
         Renderer* flame = nullptr;
         float flickerSpeed = 25;
         float animTime = 0.0f;
+        float maxIntensity = 0.25f;
         void Flicker();
     };
 }

@@ -1,6 +1,6 @@
 #version 460 core
 
-#define MAX_LIGHTS 1
+#define MAX_LIGHTS 3
 #define SPECULAR_FACTOR 100
 #define AMBIENT_FACTOR 0.3f
 
@@ -30,18 +30,23 @@ vec3 calculateFragColor(vec4 base){
     vec3 result = AMBIENT_FACTOR * base.xyz;
     // apply diffuse and specular changes for each light affecting the object.
     for(int i = 0; i < nLights; i++){
+        vec3 normal = normalize(fragNormal);
         PointLight light = lights[i];
         // diffuse:
         vec3 lightDir = normalize(light.pos - fragPos);
         // calculate distance between light src and obj.
-        float dist = distance(light.pos, fragPos);
+        float dist = max(distance(light.pos, fragPos), 0.01);
+        float attenuation = light.I / (dist*dist);
         //
-        result += (light.emission * base.xyz * max(0, dot(fragNormal, lightDir)) * light.I) / (dist);
+        result += light.emission * base.xyz * max(0, dot(normal, lightDir)) * attenuation;
 
         // specular:
         vec3 view = normalize(camPos - fragPos);
         vec3 vHalf = normalize(lightDir + view);
-        result += (light.emission * base.xyz * pow(max(0, dot(fragNormal, vHalf)), shiny * SPECULAR_FACTOR) * light.I) / (dist);
+        float shinyFactor = min(1.0, shiny);
+        float angle = max(0, dot(normal, vHalf));
+        if (angle > 0.001)
+            result += light.emission * pow(angle, shinyFactor * SPECULAR_FACTOR) * attenuation;
     }
     return result;
 }

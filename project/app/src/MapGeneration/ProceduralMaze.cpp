@@ -233,7 +233,6 @@ namespace Maze::Map {
             // place torch @ pos + 0.5 * GetRight(dir) + torchY;
             auto torch = torches.emplace_back(make_unique<Torch>(game)).get();
             Vector3 pos = Vector3(tile.pos.x, torchY, tile.pos.y) + GetRight(dir) * 0.5f;
-            DEBUG_LOG((std::string) pos)
             torch->entity->transform->SetGlobalPosition(pos);
             torch->entity->transform->Rotate(Vector3(0, rotation, 0));
         }
@@ -249,8 +248,7 @@ namespace Maze::Map {
                     continue;
                 auto dir = Vector3(dirVec2.x, 0, dirVec2.y);
                 auto torch = torches.emplace_back(make_unique<Torch>(game)).get();
-                Vector3 pos = dir * 1.5f + Vector3(tile.pos.x, torchY, tile.pos.y) + GetRight(dir) * 0.5f;
-                DEBUG_LOG((std::string) pos)
+                Vector3 pos = dir + Vector3(tile.pos.x, torchY, tile.pos.y) + GetRight(dir) * 0.5f;
                 torch->entity->transform->SetGlobalPosition(pos);
                 torch->entity->transform->Rotate(Vector3(0, GetTorchRotation(i), 0));
             }

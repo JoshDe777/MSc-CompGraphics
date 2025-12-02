@@ -5,7 +5,7 @@
 #include <algorithm>
 
 // DO NOT UPDATE WITHOUT ALSO UPDATING SAME NAMED MACRO IN FRAGMENT SHADERS!
-#define MAX_LIGHTS 1
+#define MAX_LIGHTS 3
 #define INTENSITY_THRESHOLD (1.0f/9.0f)
 #define DIST_THRESHOLD 7.5f
 
@@ -150,9 +150,8 @@ struct Entry{
                 activeShader->setMatrix("model", model);
                 activeShader->setMatrix("mvp", activeShader->CalculateMVPMatrix(model));auto normalMat = glm::mat3(model);
                 // if mat is inversible, apply inverse transposed matrix
-                if(abs(glm::determinant(normalMat)) >= 1e-6f)
-                    normalMat = glm::transpose(glm::inverse(glm::mat3(model)));
-                else {
+                normalMat = glm::transpose(glm::inverse(glm::mat3(model)));
+                if(abs(glm::determinant(normalMat)) < 1e-6f) {
                     // normalize matrix to kill scale variance
                     normalMat[0] = glm::normalize(normalMat[0]);
                     normalMat[1] = glm::normalize(normalMat[1]);
