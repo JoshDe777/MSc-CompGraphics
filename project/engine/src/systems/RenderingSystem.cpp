@@ -6,8 +6,9 @@
 
 // DO NOT UPDATE WITHOUT ALSO UPDATING SAME NAMED MACRO IN FRAGMENT SHADERS!
 #define MAX_LIGHTS 3
-#define INTENSITY_THRESHOLD (1.0f/9.0f)
 #define DIST_THRESHOLD 7.5f
+#define AMBIENT_FACTOR 0.3f
+#define SPECULAR_FACTOR 100.0f
 
 namespace EisEngine::systems {
 // helper functions:
@@ -142,6 +143,8 @@ struct Entry{
         #pragma region 3D rendering
         // Mesh3D rendering
         activeShader = ResourceManager::GetShader("3D Shader");
+        activeShader->setFloat("ambient", AMBIENT_FACTOR);
+        activeShader->setFloat("specular", SPECULAR_FACTOR);
         if(engine.componentManager.hasComponentOfType<Mesh3D>()){
             glBindVertexArray(VAO[i++]);
             activeShader->Apply(camera);
@@ -167,7 +170,7 @@ struct Entry{
                 float lodDist = 100000000000000000.0f;
                 if(!Loaders.empty())
                     for(auto obj : Loaders)
-                        lodDist = std::min(lodDist, Vector3::Distance(obj->transform->GetGlobalPosition(), pos));
+                        lodDist = std::min(lodDist, Vector3::Distance(obj->transform->GetGlobalPosition(), Vector3(pos.x, 2, pos.z)));
 
                 // if dist to any LOD object < dist threshold
                 // compute lighting

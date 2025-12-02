@@ -1,8 +1,6 @@
 #version 460 core
 
 #define MAX_LIGHTS 3
-#define SPECULAR_FACTOR 100
-#define AMBIENT_FACTOR 0.3f
 
 struct PointLight{
     vec3 pos;
@@ -10,24 +8,30 @@ struct PointLight{
     float I;
 };
 
+// Vertex Shader Input
 in vec3 fragPos;
 in vec3 fragNormal;
 in vec2 TexCoords;
 
+// Material x Texture Input
 uniform sampler2D image;
 uniform float tiling;
-uniform PointLight[MAX_LIGHTS] lights;
-uniform int nLights;
 uniform vec3 diffuse;
 uniform float alpha;
 uniform float shiny;
+
+// Lighting-related Input
+uniform PointLight[MAX_LIGHTS] lights;
+uniform int nLights;
+uniform float ambient;
+uniform float specular;
 uniform vec3 camPos;
 uniform int LOD;
 
 out vec4 fragColor;
 
 vec3 calculateFragColor(vec4 base){
-    vec3 result = AMBIENT_FACTOR * base.xyz;
+    vec3 result = ambient * base.xyz;
     // apply diffuse and specular changes for each light affecting the object.
     for(int i = 0; i < nLights; i++){
         vec3 normal = normalize(fragNormal);
@@ -46,7 +50,7 @@ vec3 calculateFragColor(vec4 base){
         float shinyFactor = min(1.0, shiny);
         float angle = max(0, dot(normal, vHalf));
         if (angle > 0.001)
-            result += light.emission * pow(angle, shinyFactor * SPECULAR_FACTOR) * attenuation;
+            result += light.emission * pow(angle, shinyFactor * specular) * attenuation;
     }
     return result;
 }
@@ -54,7 +58,7 @@ vec3 calculateFragColor(vec4 base){
 void main()
 {
     if(LOD == 0) {
-        vec4 base_color = AMBIENT_FACTOR * vec4(diffuse.xyz, alpha) * texture(image, TexCoords * tiling);
+        vec4 base_color = ambient * vec4(diffuse.xyz, alpha) * texture(image, TexCoords * tiling);
         fragColor = vec4(base_color.xyz, alpha) ;
         return;
     }
