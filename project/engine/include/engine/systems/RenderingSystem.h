@@ -14,10 +14,14 @@ namespace EisEngine::systems {
         explicit RenderingSystem(Game& engine);
         /// \n displays meshes of all supported kinds on screen.
         void Draw();
+        /// \n Adds an entity as an LOD loader object.
+        static void MarkAsLoader(Entity* ptr);
     private:
         /// \n A pointer to the active camera object.
         Camera* camera = nullptr;
         /// \n VAO array storing a VAO for each type of mesh in order: Mesh2D, Line, Mesh3D, SpriteMesh, uiMesh.
         std::array<GLuint, 5> VAO;
+        GLuint FBO;
+        static std::vector<Entity*> Loaders;
     };
 }

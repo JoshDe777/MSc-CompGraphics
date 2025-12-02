@@ -129,6 +129,7 @@ namespace EisEngine::components{
         else
             localPosition = pos;
         m_positionChanged = true;
+        dirty = true;
     }
 
     void Transform::SetGlobalRotation(const Vector3& newRotation) {
@@ -154,7 +155,7 @@ namespace EisEngine::components{
             localRotation = NormalizeAngles(newRotation);
         }
         m_rotationChanged = true;
-        UpdateChildPositionAfterRotation(angularDiff);
+        dirty = true;
     }
     void Transform::SetGlobalScale(const Vector3& scale) {
         auto oldScale = GetGlobalScale();
@@ -169,24 +170,25 @@ namespace EisEngine::components{
         else
             localScale = scale;
         SyncScale(oldScale, localScale);
-        UpdateChildPositionAfterScaling(oldScale, localScale);
+        dirty = true;
     }
     void Transform::SetLocalPosition(const Vector3& pos) {
         localPosition = pos;
         m_positionChanged = true;
+        dirty = true;
     }
     void Transform::SetLocalRotation(const Vector3& rotation) {
         auto newRotation = NormalizeAngles(rotation);
         auto angularDiff = CalculateAngularRotation(localRotation, newRotation);
         localRotation = newRotation;
         m_rotationChanged = true;
-        UpdateChildPositionAfterRotation(angularDiff);
+        dirty = true;
     }
     void Transform::SetLocalScale(const Vector3& scale) {
         auto oldScale = GetGlobalScale();
         localScale = scale;
         SyncScale(oldScale, GetGlobalScale());
-        UpdateChildPositionAfterScaling(oldScale, localScale);
+        dirty = true;
     }
 
     // transformations
@@ -210,56 +212,6 @@ namespace EisEngine::components{
     }
     void Transform::AddChild(Transform *transform) {children.insert(transform);}
     void Transform::RemoveChild(Transform *transform) { children.erase(transform);}
-
-    // child transformations
-    void Transform::UpdateChildPositionAfterRotation(const Vector3& angleDifference) {
-        /*if(children.empty())
-            return;
-
-        //glm::mat4 parentMatrix = GetLocalMatrix();
-
-        glm::mat4 rotationMatrix = glm::eulerAngleXYZ(
-                glm::radians(angleDifference.x),
-                glm::radians(angleDifference.y),
-                glm::radians(angleDifference.z));
-
-        for (auto& child : children) {
-            auto childLocalPosition = child->GetLocalPosition();
-            glm::vec4 newGlobalPositionVec4 = rotationMatrix * glm::vec4((glm::vec3) childLocalPosition, 1.0f);
-
-            auto newGlobalPosition = Vector3(
-                    newGlobalPositionVec4.x,
-                    newGlobalPositionVec4.y,
-                    newGlobalPositionVec4.z
-                    );
-
-            child->SetLocalPosition(newGlobalPosition);
-
-            //auto newRotation = child->GetLocalRotation() + angleDifference;
-            //child->SetLocalRotation(newRotation);
-        }*/
-    }
-    void Transform::UpdateChildPositionAfterScaling(const Vector3& oldScale, const Vector3& newScale){
-        if(children.empty())
-            return;
-
-        for(auto child : children){
-            auto childLocalPos = child->GetLocalPosition();
-
-            auto normalizedPos = Vector3(
-                    childLocalPos.x / oldScale.x,
-                    childLocalPos.y / oldScale.y,
-                    childLocalPos.z / oldScale.z
-                    );
-            auto rescaledPos = Vector3(
-                    normalizedPos.x * newScale.x,
-                    normalizedPos.y * newScale.y,
-                    normalizedPos.z * newScale.z
-                    );
-
-            child->SetLocalPosition(rescaledPos);
-        }
-    }
 
     glm::mat4 Transform::GetLocalMatrix() {
         auto model = glm::mat4(1.0f);

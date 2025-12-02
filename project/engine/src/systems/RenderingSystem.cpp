@@ -2,9 +2,12 @@
 #include "engine/Game.h"
 #include "engine/Components.h"
 
+#include <algorithm>
+
 // DO NOT UPDATE WITHOUT ALSO UPDATING SAME NAMED MACRO IN FRAGMENT SHADERS!
-#define MAX_LIGHTS 25
+#define MAX_LIGHTS 1
 #define INTENSITY_THRESHOLD (1.0f/9.0f)
+#define DIST_THRESHOLD 7.5f
 
 namespace EisEngine::systems {
 // helper functions:
@@ -14,6 +17,11 @@ namespace EisEngine::systems {
     { return a->entity()->transform->GetGlobalPosition().z < b->entity()->transform->GetGlobalPosition().z;}
 
 // rendering system methods:
+    std::vector<Entity*> RenderingSystem::Loaders = {};
+
+    void RenderingSystem::MarkAsLoader(EisEngine::ecs::Entity *ptr) {
+        Loaders.push_back(ptr);
+    }
 
     RenderingSystem::RenderingSystem(EisEngine::Game &engine) : System(engine) {
         camera = &engine.camera;
@@ -103,47 +111,56 @@ namespace EisEngine::systems {
                 if(renderer)
                     renderer->ApplyData(*activeShader);
 
-                // get lights
-                std::vector<PointLight*> lights = {};
+                // change this -
                 auto pos = mesh.entity()->transform->GetGlobalPosition();
-                double furthestLight = 10000000000000000000.0;
-                if(engine.componentManager.hasComponentOfType<PointLight>()){
-                    // get list of MAX_LIGHTS closest light sources to object with
-                    // an illumination (I / dist^2) reaching above the threshold.
-                    engine.componentManager.forEachComponent<PointLight>([&](PointLight& light){
-                        auto dist = Vector3::Distance(light.position(), pos);
-                        if(
-                            light.GetIntensity() / (dist*dist) > INTENSITY_THRESHOLD &&
-                            // either closer than the furthest light in list or if less than max lights considered.
-                            (dist < furthestLight || lights.size() < MAX_LIGHTS)
-                        ){
-                            float largestDist = dist;
-                            // insert at right place
-                            if(lights.empty())
-                                lights.push_back(&light);
-                            else{
-                                for(int i = (int) lights.size() - 1; i >= 0; i--){
-                                    auto nDist = Vector3::Distance(lights[i]->position(), pos);
-                                    largestDist = max(largestDist, nDist);
-                                    if(dist < nDist)
-                                       continue;
+                float lodDist = 100000000000000000.0f;
+                if(!Loaders.empty())
+                    for(auto obj : Loaders)
+                        lodDist = std::min(lodDist, Vector3::Distance(obj->transform->GetGlobalPosition(), pos));
 
-                                    // dist >= nDist
-                                    lights.insert(lights.begin() + i + 1, &light);
-                                    // keep max lights count
-                                    if(lights.size() > MAX_LIGHTS)
-                                        lights.pop_back();
-                                    break;
+                // if dist to any LOD object < dist threshold
+                // compute lighting
+                if(lodDist < DIST_THRESHOLD){
+                    activeShader->setInt("LOD", 1);
+                    std::vector<PointLight*> lights = {};
+                    double furthestLight = 10000000000000000000.0;
+                    if(engine.componentManager.hasComponentOfType<PointLight>()){
+                        // get list of MAX_LIGHTS closest light sources to object with
+                        engine.componentManager.forEachComponent<PointLight>([&](PointLight& light){
+                            auto dist = Vector3::Distance(light.position(), pos);
+                            if(lights.size() < MAX_LIGHTS || dist < furthestLight) {
+                                float largestDist = dist;
+                                // insert at right place
+                                if(lights.empty())
+                                    lights.push_back(&light);
+                                else{
+                                    for(int i = (int) lights.size() - 1; i >= 0; i--){
+                                        auto nDist = Vector3::Distance(lights[i]->position(), pos);
+                                        largestDist = std::max(largestDist, nDist);
+                                        if(dist < nDist)
+                                            continue;
+
+                                        // dist >= nDist
+                                        lights.insert(lights.begin() + i + 1, &light);
+                                        // keep max lights count
+                                        if(lights.size() > MAX_LIGHTS)
+                                            lights.pop_back();
+                                        break;
+                                    }
                                 }
+                                furthestLight = (double) largestDist;
                             }
-                            furthestLight = (double) largestDist;
-                        }
-                    });
-                }
+                        });
 
-                for(auto i = 0; i < lights.size(); i++)
-                    lights[i]->Apply(*activeShader, i);
-                activeShader->setInt("nLights", (int) lights.size());
+                        for(auto i = 0; i < lights.size(); i++)
+                            lights[i]->Apply(*activeShader, i);
+                        activeShader->setInt("nLights", (int) lights.size());
+                    }
+                }
+                else{
+                    // else default to ambient.
+                    activeShader->setInt("LOD", 0);
+                }
 
                 mesh.draw(activeShader->GetShaderID());
             });
@@ -204,5 +221,7 @@ namespace EisEngine::systems {
             mesh->draw();
         }
         #pragma endregion
+
+        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
     }
 }

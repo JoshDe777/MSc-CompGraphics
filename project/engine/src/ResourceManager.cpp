@@ -66,7 +66,7 @@ namespace EisEngine {
         if(node->mNumMeshes == 0 && node->mNumChildren == 0)
             return;
 
-        DEBUG_INFO("Processing entity " + (std::string) node->mName.C_Str() + ".")
+        //DEBUG_INFO("Processing entity " + (std::string) node->mName.C_Str() + ".")
 
         // Create entity for node & attach to parent if exists.
         auto nodeEntity = game.entityManager.createEntity(node->mName.C_Str());
@@ -127,8 +127,6 @@ namespace EisEngine {
             return nullptr;
         }
 
-        DEBUG_LOG("Loaded file " + path.string())
-
         // recursively import data following the aiScene graph.
         auto& rootEntity = game.entityManager.createEntity(path.filename().string());
         ImportNode(game, scene->mRootNode, scene, path.parent_path(), &rootEntity);
@@ -146,15 +144,6 @@ namespace EisEngine {
         if(Materials[matName] == nullptr){
             Materials[matName] = make_unique<Material>(matName);
             auto result = Materials[matName].get();
-
-            DEBUG_INFO("[" + matName + " data]")
-            for (unsigned int i = 0; i < mat->mNumProperties; i++) {
-                aiMaterialProperty* p = mat->mProperties[i];
-
-                std::cout << "Key: " << p->mKey.C_Str()
-                          << " | Type: " << p->mType
-                          << " | Size: " << p->mDataLength << "\n";
-            }
 
             // get properties:
             // -diffuse color AI_MATKEY_COLOR_DIFFUSE
@@ -188,8 +177,8 @@ namespace EisEngine {
                 mat->Get("$mat.metallicFactor", 0, 0, metallic);
             result->SetMetallic(metallic);
         }
-        else
-            DEBUG_WARN("Attempting to overwrite existing material " + matName + ".")
+        /*else
+            DEBUG_WARN("Attempting to overwrite existing material " + matName + ".")*/
         return Materials[matName].get();
     }
 

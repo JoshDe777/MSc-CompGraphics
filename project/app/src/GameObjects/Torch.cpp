@@ -35,7 +35,6 @@ namespace Maze {
 
     void Torch::Flicker() {
         auto ival = 0.5f * noise->GetNoise(0.0f, animTime * flickerSpeed) + 0.65f;
-        DEBUG_LOG(to_string(ival))
         flame->material->SetIntensity(ival);
         animTime = animTime + flickerSpeed * Time::deltaTime;
     }

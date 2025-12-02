@@ -18,7 +18,6 @@ namespace EisEngine::components {
             material = ResourceManager::GetMaterialInstance("default");
         else if(material->GetEmission() != Vector3::zero){
             entity()->AddComponent<PointLight>(material.get());
-            DEBUG_INFO("Adding Point Light with properties Emission=" + (std::string) material->GetEmission() + "; Intensity=" + std::to_string(material->GetIntensity()))
         }
     }
 

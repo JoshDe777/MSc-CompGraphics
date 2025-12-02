@@ -18,6 +18,5 @@ private:
     shared_ptr<Steve> steve = nullptr;
     shared_ptr<CamController> controller = nullptr;
     shared_ptr<ProceduralMaze> maze = nullptr;
-    shared_ptr<Minotaur> minotaur;
-    shared_ptr<Torch> torch = nullptr;
+    shared_ptr<Minotaur> minotaur = nullptr;
 };

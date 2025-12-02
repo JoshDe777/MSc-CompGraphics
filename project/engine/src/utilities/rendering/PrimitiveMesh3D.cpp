@@ -51,6 +51,9 @@ namespace EisEngine::rendering {
                                      vertices(Vector3ToGlmVector(shapeVertices)),
                                      normals(InitNormals(shapeNormals, (int) shapeVertices.size())),
                                      uvs(InitUVs(shapeUVs, (int) shapeVertices.size())),
+                                     nVerts(shapeVertices.size()),
+                                     nNormals(shapeNormals ? shapeNormals->size() : 0),
+                                     nUVs(shapeUVs ? shapeUVs->size() : 0),
                                      PrimitiveMesh(shapeVertices, shapeIndices) {}
 
     std::vector<Vector3> PrimitiveMesh3D::GetVertices() const {

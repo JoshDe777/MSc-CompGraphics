@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Tile.h"
+#include "../GameObjects/Torch.h"
 
 #include <EisEngine.h>
 
@@ -25,6 +26,7 @@ namespace Maze::Map {
         Entity* path = nullptr;
         Entity* walls = nullptr;
         std::vector<std::unique_ptr<Tile>> map = {};
+        std::vector<std::unique_ptr<Torch>> torches = {};
 
         float wallSize = 3.0f;
     };

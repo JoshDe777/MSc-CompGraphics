@@ -1,6 +1,6 @@
 #version 460 core
 
-#define MAX_LIGHTS 25
+#define MAX_LIGHTS 1
 #define SPECULAR_FACTOR 100
 #define AMBIENT_FACTOR 0.3f
 
@@ -22,6 +22,7 @@ uniform vec3 diffuse;
 uniform float alpha;
 uniform float shiny;
 uniform vec3 camPos;
+uniform int LOD;
 
 out vec4 fragColor;
 
@@ -47,6 +48,11 @@ vec3 calculateFragColor(vec4 base){
 
 void main()
 {
-    vec3 color = calculateFragColor(vec4(diffuse, 1.0) * texture(image, TexCoords * tiling));
-    fragColor = vec4(color.xyz, alpha);
+    if(LOD == 0) {
+        vec4 base_color = AMBIENT_FACTOR * vec4(diffuse.xyz, alpha) * texture(image, TexCoords * tiling);
+        fragColor = vec4(base_color.xyz, alpha) ;
+        return;
+    }
+
+    fragColor = vec4(calculateFragColor(vec4(diffuse, 1.0)).xyz, alpha) * texture(image, TexCoords * tiling);
 }

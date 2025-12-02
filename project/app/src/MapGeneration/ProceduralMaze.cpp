@@ -93,7 +93,22 @@ namespace Maze::Map {
                                     [&](Vector2& tile){return tile == pos;});
         return inGrid && notInPath;
     }
+
+    // return true only if pattern of 1-1-1 in EITHER x or y direction.
+    bool IsCorridor(const std::array<unsigned int, 9>& grid){
+        return (grid[3] == 1 && grid[5] == 1) != (grid[2] == 1 && grid[7] == 1);
+    }
+
+    Vector3 GetRight(const Vector3& dir){
+        return dir == Vector3::forward ? Vector3::right :
+            dir == Vector3::right ? -Vector3::forward :
+            dir == -Vector3::forward ? -Vector3::right :
+            dir == -Vector3::right ? Vector3::forward : Vector3::zero;
+    }
 #pragma endregion
+
+    int torchCounter = 0;
+    int tileSkip = 5;
 
     void ProceduralMaze::PlaceTile(const Tile& tile){
         // 0 = wall; 1 = path/walkable.
@@ -111,14 +126,6 @@ namespace Maze::Map {
                 DEBUG_ERROR("Invalid array index: " + std::string(e.what()));
             }
         }
-        /*/ TL corner
-        walls[0] = walls[1] * walls[3];
-        // TR corner
-        walls[2] = walls[1] * walls[5];
-        // BL corner
-        walls[6] = walls[7] * walls[3];
-        // BR corner
-        walls[8] = walls[7] * walls[5];*/
 
         // build meshes here:
         std::string name = "Path " + (std::string) tile.pos;
@@ -198,6 +205,38 @@ namespace Maze::Map {
             wallTexture = ResourceManager::GenerateTextureFromFile("textures/wood_inlaid_stone_wall_diff_4k.jpg", "walls");
         auto wallRenderer = &tileWall.AddComponent<Renderer>(wallTexture);
         wallRenderer->material->SetTiling(4.0f);
+
+        if(Math::Mod((float) torchCounter++, (float) tileSkip) != 0)
+            return;
+
+        float torchY = 0.2f;
+        // place torches:
+        // for each val in cardinal dirs where val = 1
+        // place on right hand side going out
+        if (IsCorridor(localWalls)) {
+            auto dir = localWalls[3] == 1 ? -Vector3::right : Vector3::forward;
+            // place torch @ pos + 0.5 * GetRight(dir) + torchY;
+            auto torch = torches.emplace_back(make_unique<Torch>(game)).get();
+            Vector3 pos = tile.pos + GetRight(dir) * 0.5f;
+            pos.y = torchY;
+            torch->entity->transform->SetGlobalPosition(pos);
+        }
+        else
+            // foreach pos where grid = 1:
+            for(auto i : localWalls){
+                if (i == 0)
+                    continue;
+                // place torch @ pos + 0.5 * GetRight(pos - centre) + torchY;
+                auto dirVec2 = IndexToVec2(i);
+                // skip centre tile
+                if(dirVec2 == Vector2::zero)
+                    continue;
+                auto dir = Vector3(dirVec2.x, 0, dirVec2.y);
+                auto torch = torches.emplace_back(make_unique<Torch>(game)).get();
+                Vector3 pos = tile.pos + GetRight(dir) * 0.5f;
+                pos.y = torchY;
+                torch->entity->transform->SetGlobalPosition(pos);
+            }
     }
 
     ProceduralMaze::ProceduralMaze(Game &game) : game(game) {
@@ -254,10 +293,6 @@ namespace Maze::Map {
             PlaceTile(*tile);
             // add textures (biome mapping here if implemented)
         }
-
-
-
-        // populate torches
     }
 
     void ProceduralMaze::RandomWalk(const Vector2 &start, std::vector<std::vector<unsigned int>> &grid,

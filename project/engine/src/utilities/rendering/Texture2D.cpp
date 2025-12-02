@@ -24,8 +24,7 @@ namespace EisEngine {
     }
 
     void Texture2D::Bind() const {
-        // v this generates a LOT of lag!
-        //glGenerateMipmap(GL_TEXTURE_2D);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureID);
     }
 }

@@ -8,12 +8,24 @@
 namespace EisEngine::systems{
 
     SceneGraphUpdater::SceneGraphUpdater(Game &game) : System(game)
-    { game.onUpdate.addListener([&] (Game &game){ UpdateTransforms(game);});}
+    {
+        game.onUpdate.addListener([&] (Game &game){ UpdateTransforms(game);});
+        game.onAfterUpdate.addListener([&] (Game &game){
+            if(!game.componentManager.hasComponentOfType<Transform>())
+                return;
+            game.componentManager.forEachComponent<Transform>([&] (Transform &transform){
+                transform.dirty = false;
+            });
+        });
+    }
 
     void SceneGraphUpdater::UpdateTransforms(EisEngine::Game &game) {
         if(!game.componentManager.hasComponentOfType<Transform>())
             return;
         game.componentManager.forEachComponent<Transform>([&] (Transform &transform){
+            if(!transform.IsDirty())
+                return;
+
             glm::mat4 oldMatrix = transform.modelMatrix;
             transform.modelMatrix = calculateModelMatrix(transform);
         });

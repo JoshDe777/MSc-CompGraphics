@@ -36,7 +36,7 @@ namespace EisEngine::components {
 
         // buffer population
         glBufferData(GL_ARRAY_BUFFER, total_buffer_size, nullptr, GL_STATIC_DRAW);
-        int offset = 0;
+        long long offset = 0;
         glBufferSubData(GL_ARRAY_BUFFER, offset, vsize, vertices.data());
         offset += vsize;
         glBufferSubData(GL_ARRAY_BUFFER, offset, nsize, normals.data());
@@ -50,7 +50,9 @@ namespace EisEngine::components {
     Component(engine, owner),
     primitive(_primitive),
     VBO(CreateVBO(_primitive)),
-    EBO(CreateBuffer(GL_ELEMENT_ARRAY_BUFFER, _primitive.indices)) { }
+    EBO(CreateBuffer(GL_ELEMENT_ARRAY_BUFFER, _primitive.indices)) {
+
+    }
 
     Mesh3D::Mesh3D(EisEngine::components::Mesh3D &&other)  noexcept  :
             Component(other),
@@ -69,6 +71,7 @@ namespace EisEngine::components {
 
     void Mesh3D::draw(const unsigned int& shaderProgram) {
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        GLCheckError("Mesh3D::DrawElements::VBO Binding", entity()->name());
 
         // test index order matching?
         glDisable(GL_CULL_FACE);
@@ -78,8 +81,7 @@ namespace EisEngine::components {
         glEnableVertexAttribArray(vpos);
         glVertexAttribPointer(vpos, 3, GL_FLOAT, GL_FALSE,
                               0, nullptr);
-        const auto& vertices = Vec3VectorToGlm(primitive.GetVertices());
-        auto offset = vertices.size() * sizeof(glm::vec3);
+        auto offset = primitive.GetVertexCount() * sizeof(glm::vec3);
         GLCheckError("Mesh3D::DrawElements::vertices", entity()->name());
 
         // add normals - not yet used for now.
@@ -87,8 +89,7 @@ namespace EisEngine::components {
         glEnableVertexAttribArray(norm);
         glVertexAttribPointer(norm, 3, GL_FLOAT, GL_FALSE,
                               0, (GLvoid*)offset);
-        const auto& normals = Vec3VectorToGlm(primitive.GetNormals());
-        offset += normals.size() * sizeof(glm::vec3);
+        offset += primitive.GetNormalsCount() * sizeof(glm::vec3);
         GLCheckError("Mesh3D::DrawElements::normals", entity()->name());
 
         // add uvs
