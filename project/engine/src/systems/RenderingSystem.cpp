@@ -6,7 +6,7 @@
 
 // DO NOT UPDATE WITHOUT ALSO UPDATING SAME NAMED MACRO IN FRAGMENT SHADERS!
 #define MAX_LIGHTS 3
-#define DIST_THRESHOLD 7.5f
+#define DIST_THRESHOLD 5.0f
 #define AMBIENT_FACTOR 0.3f
 #define SPECULAR_FACTOR 100.0f
 
@@ -74,7 +74,8 @@ struct Entry{
 
         if(engine.componentManager.hasComponentOfType<PointLight>()){
             engine.componentManager.forEachComponent<PointLight>([&](PointLight& light){
-                Vector2 cell = WorldToCell(light.position());
+                auto pos = light.position();
+                Vector2 cell = WorldToCell(pos);
                 LightGrid[cell].push_back(light.GetOwner());
             });
         }
@@ -151,10 +152,11 @@ struct Entry{
             engine.componentManager.forEachComponent<Mesh3D>([&](Mesh3D& mesh){
                 auto model = mesh.entity()->transform->GetModelMatrix();
                 activeShader->setMatrix("model", model);
-                activeShader->setMatrix("mvp", activeShader->CalculateMVPMatrix(model));auto normalMat = glm::mat3(model);
+                activeShader->setMatrix("mvp", activeShader->CalculateMVPMatrix(model));
+                auto normalMat = glm::mat3(model);
                 // if mat is inversible, apply inverse transposed matrix
                 normalMat = glm::transpose(glm::inverse(glm::mat3(model)));
-                if(abs(glm::determinant(normalMat)) < 1e-6f) {
+                if(abs(glm::determinant(model)) < 1e-6f) {
                     // normalize matrix to kill scale variance
                     normalMat[0] = glm::normalize(normalMat[0]);
                     normalMat[1] = glm::normalize(normalMat[1]);
@@ -165,12 +167,17 @@ struct Entry{
                 if(renderer)
                     renderer->ApplyData(*activeShader);
 
-                // change this -
                 auto pos = mesh.entity()->transform->GetGlobalPosition();
+                pos.y = 2;
                 float lodDist = 100000000000000000.0f;
                 if(!Loaders.empty())
-                    for(auto obj : Loaders)
-                        lodDist = std::min(lodDist, Vector3::Distance(obj->transform->GetGlobalPosition(), Vector3(pos.x, 2, pos.z)));
+                    for(auto obj : Loaders){
+                        auto objPos = obj->transform->GetGlobalPosition();
+                        objPos.y = 2;
+                        DEBUG_LOG("Comparing position from object " + mesh.entity()->name() + " at " + (std::string) pos +
+                        " to " + obj->name() + " at " + (std::string) objPos)
+                        lodDist = std::min(lodDist, Vector3::Distance(objPos, pos));
+                    }
 
                 // if dist to any LOD object < dist threshold
                 // compute lighting

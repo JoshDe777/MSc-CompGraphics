@@ -9,11 +9,7 @@ namespace EisEngine::systems{
 
     SceneGraphUpdater::SceneGraphUpdater(Game &game) : System(game)
     {
-        game.onUpdate.addListener([&] (Game &game){ UpdateTransforms(game);});
-        game.onAfterUpdate.addListener([&] (Game &game){
-            if(!game.componentManager.hasComponentOfType<Transform>())
-                return;
-        });
+        game.onBeforeUpdate.addListener([&] (Game &game){ UpdateTransforms(game);});
     }
 
     void SceneGraphUpdater::UpdateTransforms(EisEngine::Game &game) {

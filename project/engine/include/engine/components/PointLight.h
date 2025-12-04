@@ -17,6 +17,9 @@ namespace EisEngine{
                     Game& game, guid_t owner,
                     Material *mat
             );
+            PointLight(const PointLight &light) = delete;
+            PointLight(PointLight &&other) noexcept;
+
             void Apply(Shader& shader, const int& index) const;
 
             Vector3 GetEmission() const { return mat->GetEmission();}
