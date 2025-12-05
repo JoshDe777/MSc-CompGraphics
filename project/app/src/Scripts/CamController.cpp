@@ -18,7 +18,7 @@ namespace Maze {
     void CamController::Update(EisEngine::Game &game) {
         auto moveModifier = Time::deltaTime * movementSpeed;
         if(Input::GetKeyDown(KeyCode::W)) {
-            auto moveVector = camera->transform->Forward();
+            auto moveVector = isPerspective ? camera->transform->Forward() : camera->transform->Up();
             moveVector.y = 0;
             camera->transform->Translate(moveVector * moveModifier);
         }
@@ -28,7 +28,7 @@ namespace Maze {
             camera->transform->Translate(moveVector * moveModifier);
         }
         if(Input::GetKeyDown(KeyCode::S)) {
-            auto moveVector = -camera->transform->Forward();
+            auto moveVector = isPerspective ? -camera->transform->Forward() : -camera->transform->Up();
             moveVector.y = 0;
             camera->transform->Translate(moveVector * moveModifier);
         }
@@ -37,13 +37,21 @@ namespace Maze {
             moveVector.y = 0;
             camera->transform->Translate(moveVector * moveModifier);
         }
+        if(Input::GetKeyDown(KeyCode::Q)) {
+            // rotate left
+            baseRotation.y += rotationSpeed * Time::deltaTime;
+        }
+        if(Input::GetKeyDown(KeyCode::E)) {
+            // rotate right
+            baseRotation.y -= rotationSpeed * Time::deltaTime;
+        }
         if(Input::GetKeyDown(KeyCode::Space)) {
             if(isPerspective){
                 auto moveVector = Vector3::up;
                 camera->transform->Translate(moveVector * flyModifier * moveModifier);
             }
             else
-                camera->Zoom(zoomSpeed);
+                camera->Zoom(-zoomSpeed);
         }
         if(Input::GetKeyDown(KeyCode::LeftControl)) {
             if(isPerspective){
@@ -51,15 +59,16 @@ namespace Maze {
                 camera->transform->Translate(moveVector * flyModifier * moveModifier);
             }
             else
-                camera->Zoom(-zoomSpeed);
+                camera->Zoom(zoomSpeed);
         }
 
         if(Input::GetKeyDown(KeyCode::F)){
             if(camera->transform->parent() != minotaur){
                 camera->transform->SetParent(minotaur);
-                camera->transform->SetLocalPosition(thirdPersonOffset);
+                camera->transform->SetLocalPosition(thirdPersonOffset + Vector3::up*3);
                 camera->transform->SetLocalRotation(Vector3(-45, -15, 0));
                 camera->SetCameraMode(CameraMode::PERSPECTIVE);
+                isPerspective = true;
                 onFocusHold.invoke(*this);
             }
             else{
@@ -67,6 +76,7 @@ namespace Maze {
                 camera->transform->SetParent(nullptr);
                 camera->transform->SetLocalPosition(pos);
                 camera->SetCameraMode(CameraMode::PERSPECTIVE);
+                isPerspective = true;
             }
         }
         else if(Input::GetKeyDown(KeyCode::G)){
@@ -75,6 +85,7 @@ namespace Maze {
                 camera->transform->SetLocalPosition(thirdPersonOffset);
                 camera->transform->SetLocalRotation(Vector3(-45, -15, 0));
                 camera->SetCameraMode(CameraMode::PERSPECTIVE);
+                isPerspective = true;
                 onFocusHold.invoke(*this);
             }
             else{
@@ -82,6 +93,7 @@ namespace Maze {
                 camera->transform->SetParent(nullptr);
                 camera->transform->SetLocalPosition(pos);
                 camera->SetCameraMode(CameraMode::PERSPECTIVE);
+                isPerspective = true;
             }
         }
         else if (Input::GetKeyDown(KeyCode::V)){
@@ -118,7 +130,7 @@ namespace Maze {
             yRotation = yRotation + (targetX - yRotation) * sensitivity.x * Time::deltaTime;
             xRotation = Math::Clamp(xRotation + (targetY - xRotation) * sensitivity.y * Time::deltaTime, -135, 135);
 
-            camera->transform->SetLocalRotation(Vector3(xRotation, yRotation, 0));
+            camera->transform->SetLocalRotation(baseRotation + Vector3(xRotation, yRotation, 0));
         }
     }
 }

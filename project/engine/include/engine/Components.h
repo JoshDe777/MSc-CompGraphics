@@ -12,6 +12,7 @@
 
 #include "engine/components/Renderer.h"
 #include "engine/components/PointLight.h"
+#include "engine/components/Animator.h"
 
 using BoxCollider2D = EisEngine::components::BoxCollider2D;
 using PhysicsBody2D = EisEngine::components::PhysicsBody2D;
@@ -25,3 +26,4 @@ using Line = EisEngine::components::Line;
 
 using Renderer = EisEngine::components::Renderer;
 using PointLight = EisEngine::components::PointLight;
+using Animator = EisEngine::components::Animator;

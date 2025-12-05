@@ -32,5 +32,6 @@ namespace Maze {
         Vector3 startUp;
         float yRotation = 0.0f;
         Vector2 sensitivity = Vector2(3.0f, 1.0f);
+        Vector3 baseRotation = Vector3::zero;
     };
 }

@@ -7,7 +7,7 @@
 // DO NOT UPDATE WITHOUT ALSO UPDATING SAME NAMED MACRO IN FRAGMENT SHADERS!
 #define MAX_LIGHTS 3
 #define DIST_THRESHOLD 5.0f
-#define AMBIENT_FACTOR 0.3f
+#define AMBIENT_FACTOR 0.15f
 #define SPECULAR_FACTOR 100.0f
 
 namespace EisEngine::systems {
@@ -174,8 +174,6 @@ struct Entry{
                     for(auto obj : Loaders){
                         auto objPos = obj->transform->GetGlobalPosition();
                         objPos.y = 2;
-                        DEBUG_LOG("Comparing position from object " + mesh.entity()->name() + " at " + (std::string) pos +
-                        " to " + obj->name() + " at " + (std::string) objPos)
                         lodDist = std::min(lodDist, Vector3::Distance(objPos, pos));
                     }
 
