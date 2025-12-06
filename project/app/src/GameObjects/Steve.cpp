@@ -81,7 +81,7 @@ namespace Maze {
     void Steve::Animate() {
         // rotate
         if(Input::GetKeyDown(KeyCode::R))
-            entity->transform->Rotate(Vector3(0,1,0));
+            torso->transform->Rotate(Vector3(0,1,0) * 5.0f);
 
         // walk animation:
         animTime += Time::deltaTime;
@@ -94,6 +94,7 @@ namespace Maze {
         shoulderR->transform->SetLocalRotation(-rotation);
         hipL->transform->SetLocalRotation(-rotation);
 
-        entity->transform->Translate(Vector3::forward * moveSpeed * Time::deltaTime);
+        entity->transform->Translate(torso->transform->Forward() * moveSpeed * Time::deltaTime);
+        DEBUG_INFO(entity->transform->GetGlobalPosition())
     }
 }
