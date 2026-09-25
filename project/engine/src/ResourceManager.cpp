@@ -332,7 +332,6 @@ namespace EisEngine {
 #pragma endregion
 
 #pragma region Shader handling
-
     Shader *ResourceManager::GenerateShaderFromFiles(const fs::path &vertexShaderPath,
                                                      const fs::path &fragmentShaderPath,
                                                      const std::string &shaderName) {

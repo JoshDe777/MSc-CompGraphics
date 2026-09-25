@@ -95,6 +95,5 @@ namespace Maze {
         hipL->transform->SetLocalRotation(-rotation);
 
         entity->transform->Translate(torso->transform->Forward() * moveSpeed * Time::deltaTime);
-        DEBUG_INFO(entity->transform->GetGlobalPosition())
     }
 }
